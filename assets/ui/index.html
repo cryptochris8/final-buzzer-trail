@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Buzzer Trail</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="screen active">
+        <div class="loading-content">
+            <h1>🚌 Final Buzzer Trail</h1>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+            <p>Loading your journey to Oregon...</p>
+        </div>
+    </div>
+
+    <!-- Main Menu -->
+    <div id="main-menu" class="screen">
+        <div class="menu-content">
+            <h1>🚌 Final Buzzer Trail</h1>
+            <p class="subtitle">An Oregon Trail Adventure</p>
+            
+            <div class="menu-buttons">
+                <button class="menu-btn primary" onclick="startNewGame()">Begin Your Journey</button>
+                <button class="menu-btn" onclick="showInstructions()">How to Play</button>
+                <button class="menu-btn" onclick="showCredits()">Credits</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Character Creation -->
+    <div id="character-creation" class="screen">
+        <div class="creation-content">
+            <h2>Choose Your Profession</h2>
+            <p>Each profession starts with different money and skills</p>
+            
+            <div class="profession-grid">
+                <div class="profession-card" data-profession="BANKER">
+                    <h3>💼 Banker from Boston</h3>
+                    <div class="money">Starting Money: $1,600</div>
+                    <p>You have excellent financial resources but limited wilderness skills.</p>
+                </div>
+                
+                <div class="profession-card" data-profession="CARPENTER">
+                    <h3>🔨 Carpenter from Ohio</h3>
+                    <div class="money">Starting Money: $800</div>
+                    <p>Good at repairs and building. Moderate resources.</p>
+                </div>
+                
+                <div class="profession-card" data-profession="FARMER">
+                    <h3>🌾 Farmer from Illinois</h3>
+                    <div class="money">Starting Money: $400</div>
+                    <p>Experienced with livestock and weather. Limited money but good survival skills.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- General Store -->
+    <div id="general-store" class="screen">
+        <div class="store-content">
+            <h2>🏪 General Store</h2>
+            <p>Stock up on supplies for your journey</p>
+            
+            <div class="store-layout">
+                <div class="supplies-grid">
+                    <div class="supply-item" data-item="food">
+                        <h3>🍞 Food</h3>
+                        <p>$0.50 per pound</p>
+                        <div class="purchase-controls">
+                            <button onclick="adjustPurchase('food', -10)">-10</button>
+                            <input type="number" id="food-quantity" value="0" min="0">
+                            <button onclick="adjustPurchase('food', 10)">+10</button>
+                        </div>
+                    </div>
+                    
+                    <div class="supply-item" data-item="ammunition">
+                        <h3>🏹 Ammunition</h3>
+                        <p>$0.05 per round</p>
+                        <div class="purchase-controls">
+                            <button onclick="adjustPurchase('ammunition', -50)">-50</button>
+                            <input type="number" id="ammunition-quantity" value="0" min="0">
+                            <button onclick="adjustPurchase('ammunition', 50)">+50</button>
+                        </div>
+                    </div>
+                    
+                    <div class="supply-item" data-item="medicine">
+                        <h3>💊 Medicine</h3>
+                        <p>$1.00 per unit</p>
+                        <div class="purchase-controls">
+                            <button onclick="adjustPurchase('medicine', -5)">-5</button>
+                            <input type="number" id="medicine-quantity" value="0" min="0">
+                            <button onclick="adjustPurchase('medicine', 5)">+5</button>
+                        </div>
+                    </div>
+                    
+                    <div class="supply-item" data-item="clothing">
+                        <h3>👕 Clothing</h3>
+                        <p>$5.00 per set</p>
+                        <div class="purchase-controls">
+                            <button onclick="adjustPurchase('clothing', -2)">-2</button>
+                            <input type="number" id="clothing-quantity" value="0" min="0">
+                            <button onclick="adjustPurchase('clothing', 2)">+2</button>
+                        </div>
+                    </div>
+                    
+                    <div class="supply-item" data-item="spare_parts">
+                        <h3>🔧 Spare Parts</h3>
+                        <p>$2.00 per part</p>
+                        <div class="purchase-controls">
+                            <button onclick="adjustPurchase('spare_parts', -5)">-5</button>
+                            <input type="number" id="spare_parts-quantity" value="0" min="0">
+                            <button onclick="adjustPurchase('spare_parts', 5)">+5</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="store-summary">
+                    <h3>Purchase Summary</h3>
+                    <div id="total-cost">Total: $0.00</div>
+                    <div id="money-remaining">Money Left: $0.00</div>
+                    
+                    <div class="store-actions">
+                        <button class="btn primary" onclick="completePurchase()">Buy Supplies</button>
+                        <button class="btn" onclick="startJourney()">Start Journey</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Game Interface -->
+    <div id="game-interface" class="screen">
+        <!-- Top Status Bar -->
+        <div class="status-bar">
+            <div class="status-group">
+                <span class="status-label">Distance:</span>
+                <span id="distance-traveled">0</span> / <span id="total-distance">2000</span> miles
+            </div>
+            <div class="status-group">
+                <span class="status-label">Day:</span>
+                <span id="days-on-trail">1</span>
+            </div>
+            <div class="status-group">
+                <span class="status-label">Weather:</span>
+                <span id="current-weather">Fair</span>
+            </div>
+            <div class="status-group">
+                <span class="status-label">Pace:</span>
+                <span id="travel-pace">Steady</span>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="game-content">
+            <!-- Left Panel: Party & Health -->
+            <div class="left-panel">
+                <div class="panel party-panel">
+                    <h3>🚶 Your Party</h3>
+                    <div id="party-members">
+                        <!-- Party members populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="panel supplies-panel">
+                    <h3>📦 Supplies</h3>
+                    <div class="supplies-grid">
+                        <div class="supply-stat">
+                            <span class="supply-icon">💰</span>
+                            <span class="supply-label">Money:</span>
+                            <span id="money-amount">$0</span>
+                        </div>
+                        <div class="supply-stat">
+                            <span class="supply-icon">🍞</span>
+                            <span class="supply-label">Food:</span>
+                            <span id="food-amount">0 lbs</span>
+                        </div>
+                        <div class="supply-stat">
+                            <span class="supply-icon">🏹</span>
+                            <span class="supply-label">Ammo:</span>
+                            <span id="ammunition-amount">0</span>
+                        </div>
+                        <div class="supply-stat">
+                            <span class="supply-icon">💊</span>
+                            <span class="supply-label">Medicine:</span>
+                            <span id="medicine-amount">0</span>
+                        </div>
+                        <div class="supply-stat">
+                            <span class="supply-icon">👕</span>
+                            <span class="supply-label">Clothing:</span>
+                            <span id="clothing-amount">0</span>
+                        </div>
+                        <div class="supply-stat">
+                            <span class="supply-icon">🔧</span>
+                            <span class="supply-label">Parts:</span>
+                            <span id="spare_parts-amount">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center Panel: Trail Map -->
+            <div class="center-panel">
+                <div class="panel trail-map-panel">
+                    <h3>🗺️ Trail Progress</h3>
+                    <div class="trail-map">
+                        <div class="trail-line">
+                            <div id="progress-marker" class="progress-marker">🚌</div>
+                        </div>
+                        <div class="landmarks" id="landmarks-container">
+                            <!-- Landmarks populated by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <div class="current-location">
+                        <h4 id="current-landmark">Hindman, Kentucky</h4>
+                        <p id="landmark-description">Your journey begins here.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Actions -->
+            <div class="right-panel">
+                <div class="panel actions-panel">
+                    <h3>⚡ Quick Actions</h3>
+                    <div class="action-buttons">
+                        <button class="action-btn" onclick="continueTrail()">
+                            <span class="btn-icon">🚶</span>
+                            Continue on Trail
+                            <span class="btn-hint">Key: 3</span>
+                        </button>
+                        <button class="action-btn" onclick="restForDay()">
+                            <span class="btn-icon">😴</span>
+                            Rest for Day
+                            <span class="btn-hint">Key: 1</span>
+                        </button>
+                        <button class="action-btn" onclick="huntForFood()">
+                            <span class="btn-icon">🏹</span>
+                            Hunt for Food
+                            <span class="btn-hint">Key: 2</span>
+                        </button>
+                        <button class="action-btn" onclick="changePace()">
+                            <span class="btn-icon">⚙️</span>
+                            Change Pace
+                        </button>
+                        <button class="action-btn" onclick="changeRations()">
+                            <span class="btn-icon">🍽️</span>
+                            Change Rations
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="panel info-panel">
+                    <h3>ℹ️ Trail Info</h3>
+                    <div id="trail-messages" class="trail-messages">
+                        <p>Welcome to the Oregon Trail! Your journey to Oregon City begins now.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Modal -->
+    <div id="event-modal" class="modal">
+        <div class="modal-content">
+            <h2 id="event-title">Trail Event</h2>
+            <p id="event-description">Something has happened on the trail...</p>
+            
+            <div id="event-choices" class="event-choices">
+                <!-- Event choices populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <h2>Travel Settings</h2>
+            
+            <div class="settings-section">
+                <h3>Travel Pace</h3>
+                <div class="radio-group">
+                    <label><input type="radio" name="pace" value="grueling"> Grueling (20 mi/day - Fast but dangerous)</label>
+                    <label><input type="radio" name="pace" value="strenuous"> Strenuous (15 mi/day - Moderate pace)</label>
+                    <label><input type="radio" name="pace" value="steady" checked> Steady (12 mi/day - Safe and sure)</label>
+                    <label><input type="radio" name="pace" value="rest"> Rest (0 mi/day - Rest and recover)</label>
+                </div>
+            </div>
+            
+            <div class="settings-section">
+                <h3>Food Rations</h3>
+                <div class="radio-group">
+                    <label><input type="radio" name="rations" value="filling" checked> Filling (3 lbs/person/day)</label>
+                    <label><input type="radio" name="rations" value="meager"> Meager (2 lbs/person/day)</label>
+                    <label><input type="radio" name="rations" value="bare_bones"> Bare bones (1 lb/person/day)</label>
+                </div>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="btn primary" onclick="saveSettings()">Apply Changes</button>
+                <button class="btn" onclick="closeModal('settings-modal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="game-over" class="screen">
+        <div class="game-over-content">
+            <h1>💀 Game Over</h1>
+            <p id="game-over-reason">Your journey has ended...</p>
+            
+            <div class="final-stats">
+                <h3>Final Statistics</h3>
+                <div id="final-stats-content">
+                    <!-- Final stats populated by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="game-over-actions">
+                <button class="btn primary" onclick="restartGame()">Try Again</button>
+                <button class="btn" onclick="showMainMenu()">Main Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Victory Screen -->
+    <div id="victory" class="screen">
+        <div class="victory-content">
+            <h1>🎉 Congratulations!</h1>
+            <p>You have successfully reached Oregon City!</p>
+            
+            <div class="victory-stats">
+                <h3>Journey Statistics</h3>
+                <div id="victory-stats-content">
+                    <!-- Victory stats populated by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="victory-actions">
+                <button class="btn primary" onclick="restartGame()">New Journey</button>
+                <button class="btn" onclick="showMainMenu()">Main Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Controls -->
+    <div class="mobile-controls">
+        <button id="mobile-interact-button" class="mobile-button">
+            <img src="{{CDN_ASSETS_URL}}/icons/target.png" />
+        </button>
+        <button id="mobile-jump-button" class="mobile-button">
+            <img src="{{CDN_ASSETS_URL}}/icons/jump.png" />
+        </button>
+    </div>
+
+    <!-- Game JavaScript -->
+    <script>
+        // Game State
+        let gameState = {
+            phase: 'menu',
+            currentDistance: 0,
+            supplies: {
+                money: 1600,
+                food: 200,
+                ammunition: 200,
+                medicine: 20,
+                clothing: 40,
+                spare_parts: 20
+            },
+            party: [],
+            currentLandmark: 0,
+            travelPace: 'steady',
+            foodRation: 'filling',
+            weather: 'fair',
+            daysOnTrail: 0,
+            profession: ''
+        };
+
+        let landmarks = [];
+        let currentEvent = null;
+
+        // Initialize UI
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hide loading screen after 2 seconds
+            setTimeout(() => {
+                hideScreen('loading-screen');
+                showScreen('main-menu');
+            }, 2000);
+
+            setupEventListeners();
+        });
+
+        // Screen Management
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function hideScreen(screenId) {
+            document.getElementById(screenId).classList.remove('active');
+        }
+
+        // Modal Management
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Game Functions
+        function startNewGame() {
+            showScreen('character-creation');
+        }
+
+        function showInstructions() {
+            // Implement instructions modal
+            alert('Use the UI to manage your supplies and make decisions. Your goal is to travel 2,000 miles to Oregon City without running out of supplies or losing your party members!');
+        }
+
+        function showCredits() {
+            alert('Final Buzzer Trail - Built with Hytopia SDK\nA modern take on the classic Oregon Trail game.');
+        }
+
+        function chooseProfession(profession) {
+            gameState.profession = profession;
+            sendToServer('choose-profession', { profession: profession });
+            showScreen('general-store');
+        }
+
+        function adjustPurchase(item, amount) {
+            const input = document.getElementById(item + '-quantity');
+            const currentValue = parseInt(input.value) || 0;
+            const newValue = Math.max(0, currentValue + amount);
+            input.value = newValue;
+            updatePurchaseSummary();
+        }
+
+        function updatePurchaseSummary() {
+            const storePrices = {
+                food: 0.50,
+                ammunition: 0.05,
+                medicine: 1.00,
+                clothing: 5.00,
+                spare_parts: 2.00
+            };
+
+            let totalCost = 0;
+            Object.keys(storePrices).forEach(item => {
+                const quantity = parseInt(document.getElementById(item + '-quantity').value) || 0;
+                totalCost += quantity * storePrices[item];
+            });
+
+            document.getElementById('total-cost').textContent = `Total: $${totalCost.toFixed(2)}`;
+            document.getElementById('money-remaining').textContent = `Money Left: $${(gameState.supplies.money - totalCost).toFixed(2)}`;
+        }
+
+        function completePurchase() {
+            const purchases = {};
+            const storePrices = {
+                food: 0.50,
+                ammunition: 0.05,
+                medicine: 1.00,
+                clothing: 5.00,
+                spare_parts: 2.00
+            };
+
+            Object.keys(storePrices).forEach(item => {
+                const quantity = parseInt(document.getElementById(item + '-quantity').value) || 0;
+                if (quantity > 0) {
+                    purchases[item] = quantity;
+                    sendToServer('buy-supplies', { item: item, quantity: quantity });
+                }
+            });
+        }
+
+        function startJourney() {
+            sendToServer('start-journey');
+            showScreen('game-interface');
+            gameState.phase = 'traveling';
+        }
+
+        // Action Functions
+        function continueTrail() {
+            sendToServer('continue-trail');
+        }
+
+        function restForDay() {
+            sendToServer('rest');
+        }
+
+        function huntForFood() {
+            sendToServer('hunt');
+        }
+
+        function changePace() {
+            showModal('settings-modal');
+        }
+
+        function changeRations() {
+            showModal('settings-modal');
+        }
+
+        function saveSettings() {
+            const pace = document.querySelector('input[name="pace"]:checked').value;
+            const rations = document.querySelector('input[name="rations"]:checked').value;
+            
+            sendToServer('set-pace', { pace: pace });
+            sendToServer('set-rations', { rations: rations });
+            
+            closeModal('settings-modal');
+        }
+
+        // Event Handling
+        function handleEventChoice(choiceIndex) {
+            if (currentEvent) {
+                sendToServer('event-choice', { 
+                    eventId: currentEvent.id, 
+                    choiceIndex: choiceIndex 
+                });
+                closeModal('event-modal');
+                currentEvent = null;
+            }
+        }
+
+        // UI Updates
+        function updateGameState(newState) {
+            gameState = { ...gameState, ...newState };
+            
+            // Update distance
+            document.getElementById('distance-traveled').textContent = gameState.currentDistance;
+            document.getElementById('days-on-trail').textContent = gameState.daysOnTrail;
+            document.getElementById('current-weather').textContent = gameState.weather;
+            document.getElementById('travel-pace').textContent = gameState.travelPace;
+            
+            // Update supplies
+            Object.keys(gameState.supplies).forEach(supply => {
+                const element = document.getElementById(supply + '-amount');
+                if (element) {
+                    let value = gameState.supplies[supply];
+                    if (supply === 'money') value = `$${value}`;
+                    else if (supply === 'food') value = `${value} lbs`;
+                    element.textContent = value;
+                }
+            });
+            
+            // Update party
+            updatePartyDisplay();
+            updateTrailProgress();
+        }
+
+        function updatePartyDisplay() {
+            const container = document.getElementById('party-members');
+            container.innerHTML = '';
+            
+            gameState.party.forEach(member => {
+                const memberDiv = document.createElement('div');
+                memberDiv.className = 'party-member';
+                memberDiv.innerHTML = `
+                    <div class="member-name">${member.name}</div>
+                    <div class="member-health">
+                        <div class="health-bar">
+                            <div class="health-fill" style="width: ${member.health}%"></div>
+                        </div>
+                        <span class="health-status ${member.status}">${member.status}</span>
+                    </div>
+                `;
+                container.appendChild(memberDiv);
+            });
+        }
+
+        function updateTrailProgress() {
+            const progressPercent = (gameState.currentDistance / 2000) * 100;
+            const marker = document.getElementById('progress-marker');
+            marker.style.left = `${Math.min(progressPercent, 100)}%`;
+            
+            // Update current landmark
+            if (landmarks.length > 0) {
+                const currentLandmark = landmarks[gameState.currentLandmark];
+                if (currentLandmark) {
+                    document.getElementById('current-landmark').textContent = currentLandmark.name;
+                }
+            }
+        }
+
+        function showTrailEvent(event) {
+            currentEvent = event;
+            document.getElementById('event-title').textContent = event.title;
+            document.getElementById('event-description').textContent = event.description;
+            
+            const choicesContainer = document.getElementById('event-choices');
+            choicesContainer.innerHTML = '';
+            
+            event.choices.forEach((choice, index) => {
+                const button = document.createElement('button');
+                button.className = 'choice-btn';
+                button.textContent = choice.text;
+                button.onclick = () => handleEventChoice(index);
+                choicesContainer.appendChild(button);
+            });
+            
+            showModal('event-modal');
+        }
+
+        function addTrailMessage(message, color = '#00AA00') {
+            const messagesContainer = document.getElementById('trail-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'trail-message';
+            messageDiv.style.color = color;
+            messageDiv.textContent = message;
+            messagesContainer.appendChild(messageDiv);
+            
+            // Keep only last 10 messages
+            while (messagesContainer.children.length > 10) {
+                messagesContainer.removeChild(messagesContainer.firstChild);
+            }
+            
+            // Scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function restartGame() {
+            gameState = {
+                phase: 'menu',
+                currentDistance: 0,
+                supplies: {
+                    money: 1600,
+                    food: 200,
+                    ammunition: 200,
+                    medicine: 20,
+                    clothing: 40,
+                    spare_parts: 20
+                },
+                party: [],
+                currentLandmark: 0,
+                travelPace: 'steady',
+                foodRation: 'filling',
+                weather: 'fair',
+                daysOnTrail: 0,
+                profession: ''
+            };
+            showScreen('main-menu');
+        }
+
+        function showMainMenu() {
+            showScreen('main-menu');
+        }
+
+        // Server Communication
+        function sendToServer(action, data = {}) {
+            if (typeof hytopia !== 'undefined') {
+                hytopia.ui.send({
+                    type: action,
+                    ...data
+                });
+            }
+        }
+
+        // Event Listeners
+        function setupEventListeners() {
+            // Profession selection
+            document.querySelectorAll('.profession-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const profession = this.dataset.profession;
+                    document.querySelectorAll('.profession-card').forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                    chooseProfession(profession);
+                });
+            });
+
+            // Mobile controls
+            const mobileInteractButton = document.getElementById('mobile-interact-button');
+            if (mobileInteractButton) {
+                mobileInteractButton.addEventListener('touchstart', e => {
+                    e.preventDefault();
+                    mobileInteractButton.classList.add('active');
+                    if (typeof hytopia !== 'undefined') {
+                        hytopia.pressInput('ml', true);
+                    }
+                });
+
+                mobileInteractButton.addEventListener('touchend', e => {
+                    e.preventDefault();
+                    mobileInteractButton.classList.remove('active');
+                    if (typeof hytopia !== 'undefined') {
+                        hytopia.pressInput('ml', false);
+                    }
+                });
+            }
+
+            const mobileJumpButton = document.getElementById('mobile-jump-button');
+            if (mobileJumpButton) {
+                mobileJumpButton.addEventListener('touchstart', e => {
+                    e.preventDefault();
+                    mobileJumpButton.classList.add('active');
+                    if (typeof hytopia !== 'undefined') {
+                        hytopia.pressInput(' ', true);
+                    }
+                });
+
+                mobileJumpButton.addEventListener('touchend', e => {
+                    e.preventDefault();
+                    mobileJumpButton.classList.remove('active');
+                    if (typeof hytopia !== 'undefined') {
+                        hytopia.pressInput(' ', false);
+                    }
+                });
+            }
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                if (gameState.phase === 'traveling') {
+                    switch(e.key) {
+                        case '1':
+                            e.preventDefault();
+                            restForDay();
+                            break;
+                        case '2':
+                            e.preventDefault();
+                            huntForFood();
+                            break;
+                        case '3':
+                            e.preventDefault();
+                            continueTrail();
+                            break;
+                    }
+                }
+            });
+        }
+
+        // Hytopia Integration
+        if (typeof hytopia !== 'undefined') {
+            hytopia.ui.on('data', function(data) {
+                switch(data.type) {
+                    case 'game-state-update':
+                        updateGameState(data.gameState);
+                        if (data.landmarks) {
+                            landmarks = data.landmarks;
+                        }
+                        break;
+                    case 'trail-event':
+                        showTrailEvent(data.event);
+                        break;
+                    case 'game-over':
+                        document.getElementById('game-over-reason').textContent = data.reason;
+                        showScreen('game-over');
+                        break;
+                    case 'victory':
+                        showScreen('victory');
+                        break;
+                    case 'trail-message':
+                        addTrailMessage(data.message, data.color);
+                        break;
+                }
+            });
+        }
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #8B4513 0%, #DEB887 50%, #F4A460 100%);
+            color: #333;
+            overflow: hidden;
+        }
+
+        .screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #8B4513 0%, #DEB887 50%, #F4A460 100%);
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* Loading Screen */
+        .loading-content {
+            text-align: center;
+            color: white;
+        }
+
+        .loading-content h1 {
+            font-family: 'Merriweather', serif;
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .loading-bar {
+            width: 300px;
+            height: 20px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 2rem auto;
+        }
+
+        .loading-progress {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+            animation: loadingProgress 2s ease-in-out forwards;
+        }
+
+        @keyframes loadingProgress {
+            to { width: 100%; }
+        }
+
+        /* Menu Styles */
+        .menu-content, .creation-content {
+            text-align: center;
+            background: rgba(255,255,255,0.95);
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 90%;
+        }
+
+        .menu-content h1 {
+            font-family: 'Merriweather', serif;
+            font-size: 2.5rem;
+            color: #8B4513;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .menu-btn, .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #8B4513;
+            color: white;
+        }
+
+        .menu-btn.primary, .btn.primary {
+            background: #CD853F;
+        }
+
+        .menu-btn:hover, .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Character Creation */
+        .profession-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .profession-card {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .profession-card:hover, .profession-card.selected {
+            border-color: #CD853F;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .profession-card h3 {
+            color: #8B4513;
+            margin-bottom: 0.5rem;
+        }
+
+        .money {
+            color: #228B22;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Store Layout */
+        .store-content {
+            width: 95%;
+            max-width: 1200px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 2rem;
+        }
+
+        .store-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .supplies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .supply-item {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .purchase-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .purchase-controls button {
+            padding: 0.25rem 0.5rem;
+            background: #8B4513;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .purchase-controls input {
+            width: 60px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 0.25rem;
+        }
+
+        .store-summary {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+        }
+
+        /* Game Interface */
+        #game-interface {
+            background: none;
+            display: none;
+            flex-direction: column;
+        }
+
+        #game-interface.active {
+            display: flex;
+        }
+
+        .status-bar {
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .status-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-label {
+            font-weight: bold;
+        }
+
+        .game-content {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 300px 1fr 300px;
+            gap: 1rem;
+            padding: 1rem;
+            overflow: hidden;
+        }
+
+        .panel {
+            background: rgba(255,255,255,0.95);
+            border-radius: 10px;
+            padding: 1rem;
+            height: fit-content;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+        }
+
+        .panel h3 {
+            color: #8B4513;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #DEB887;
+        }
+
+        /* Party Panel */
+        .party-member {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .member-name {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .health-bar {
+            background: #ddd;
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 0.25rem;
+        }
+
+        .health-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff4444, #ffff44, #44ff44);
+            transition: width 0.3s ease;
+        }
+
+        .health-status {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        .health-status.excellent { color: #44ff44; }
+        .health-status.good { color: #88ff44; }
+        .health-status.fair { color: #ffff44; }
+        .health-status.poor { color: #ff8844; }
+        .health-status.very_poor { color: #ff4444; }
+        .health-status.dead { color: #000; }
+
+        /* Supplies Panel */
+        .supplies-grid {
+            display: grid;
+            gap: 0.5rem;
+        }
+
+        .supply-stat {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: white;
+            border-radius: 5px;
+        }
+
+        .supply-icon {
+            font-size: 1.2rem;
+        }
+
+        /* Trail Map */
+        .trail-map {
+            position: relative;
+            height: 200px;
+            background: linear-gradient(90deg, #DEB887, #F4A460);
+            border-radius: 10px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .trail-line {
+            position: absolute;
+            top: 50%;
+            left: 5%;
+            right: 5%;
+            height: 4px;
+            background: #8B4513;
+            transform: translateY(-50%);
+        }
+
+        .progress-marker {
+            position: absolute;
+            top: 50%;
+            left: 0%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            transition: left 0.5s ease;
+        }
+
+        .landmarks {
+            position: absolute;
+            top: 10px;
+            left: 5%;
+            right: 5%;
+            height: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .current-location {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        /* Actions Panel */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .action-btn:hover {
+            border-color: #CD853F;
+            transform: translateY(-2px);
+        }
+
+        .btn-icon {
+            font-size: 1.5rem;
+        }
+
+        .btn-hint {
+            margin-left: auto;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .trail-messages {
+            max-height: 200px;
+            overflow-y: auto;
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .trail-message {
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .event-choices {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .choice-btn {
+            padding: 1rem;
+            background: #8B4513;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .choice-btn:hover {
+            background: #CD853F;
+            transform: translateY(-2px);
+        }
+
+        .settings-section {
+            margin-bottom: 2rem;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .radio-group label:hover {
+            background: #f5f5f5;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+
+        /* Game Over / Victory */
+        .game-over-content, .victory-content {
+            text-align: center;
+            background: rgba(255,255,255,0.95);
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 90%;
+        }
+
+        .final-stats, .victory-stats {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+            text-align: left;
+        }
+
+        .game-over-actions, .victory-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        /* Mobile Controls */
+        .mobile-controls {
+            display: none;
+        }
+
+        body.mobile .mobile-controls {
+            display: flex;
+            gap: 14px;
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            z-index: 100;
+        }
+
+        .mobile-button {
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            display: flex;
+            width: 50px;
+            height: 50px;
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform, background-color;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            border: none;
+            cursor: pointer;
+        }
+
+        .mobile-button img {
+            width: 22px;
+            height: 22px;
+        }
+
+        .mobile-button.active {
+            transform: scale(0.92);
+            background-color: rgba(0, 0, 0, 0.75);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .game-content {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .status-bar {
+                flex-direction: column;
+                gap: 0.5rem;
+                text-align: center;
+            }
+
+            .store-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .supplies-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .menu-content, .creation-content {
+                padding: 2rem 1rem;
+            }
+
+            .profession-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body>
+</html>
