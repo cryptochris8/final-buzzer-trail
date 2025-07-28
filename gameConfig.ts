@@ -1,117 +1,138 @@
-// Final Buzzer Trail - Oregon Trail Style Game Configuration
+// Final Buzzer Trail - Sports Arena MMORPG Game Configuration
 
 export const GAME_CONFIG = {
   // Core Game Settings
   GAME_NAME: 'Final Buzzer Trail',
   GAME_VERSION: '1.0.0',
-  MAX_PLAYERS: 8,
+  MAX_PLAYERS: 50,
   MIN_PLAYERS_TO_START: 1,
   
-  // Journey Configuration
-  TRAIL_DISTANCE: 2000, // Total miles to destination
-  DAILY_TRAVEL_DISTANCE: {
-    GRUELING: 20,    // Fast but risky
-    STRENUOUS: 15,   // Moderate pace
-    STEADY: 12,      // Safe but slow
-    REST: 0          // No travel, rest day
+  // Arena Prime Regions
+  REGIONS: {
+    CHAMPION_CITY: { name: 'Champion City', unlockLevel: 1 },
+    VERDANT_VALLEY: { name: 'Verdant Valley (Forest Zone)', unlockLevel: 5 },
+    CORAL_COAST: { name: 'Coral Coast (Beach Zone)', unlockLevel: 10 },
+    SUMMIT_HEIGHTS: { name: 'Summit Heights (Mountain Zone)', unlockLevel: 15 },
+    STREET_ARENA: { name: 'Street Sports Arena (Urban Zone)', unlockLevel: 20 }
   },
   
   // Starting Resources
   STARTING_SUPPLIES: {
-    money: 1600,        // Starting cash
-    food: 200,          // Pounds of food
-    ammunition: 200,    // Rounds
-    medicine: 20,       // Medicine units
-    clothing: 40,       // Sets of clothing
-    spare_parts: 20,    // Wagon repair parts
+    team_funds: 100,     // Team money for expenses
+    energy: 100,        // Athletic stamina
+    health: 100,        // Player health
+    equipment_durability: 100, // Sports gear condition
+    skill_points: 5,    // For ability upgrades
+    champion_emblems: 0, // Progress tokens
   },
   
-  // Health System
-  HEALTH_STATES: {
-    EXCELLENT: 100,
-    GOOD: 75,
-    FAIR: 50,
-    POOR: 25,
-    VERY_POOR: 10,
-    DEAD: 0
+  // Athletic Performance System
+  PERFORMANCE_STATES: {
+    PEAK_CONDITION: 100,
+    EXCELLENT: 85,
+    GOOD: 70,
+    FAIR: 55,
+    TIRED: 40,
+    EXHAUSTED: 25,
+    INJURED: 10
   },
   
-  // Food Consumption (per person per day)
-  FOOD_RATIONS: {
-    FILLING: 3,      // pounds per person per day
-    MEAGER: 2,       // moderate risk
-    BARE_BONES: 1    // high risk of illness
+  // Energy Consumption (per challenge)
+  ENERGY_COSTS: {
+    BASIC_CHALLENGE: 10,    // Simple sports mini-game
+    INTERMEDIATE: 20,       // Standard quest
+    ADVANCED: 35,          // Sport Champion challenge
+    TOURNAMENT: 50         // Major competition
   },
   
-  // Weather Conditions
-  WEATHER_TYPES: [
-    'FAIR',
-    'RAINY', 
-    'HOT',
-    'COLD',
-    'STORMY',
-    'FOG'
+  // Arena Conditions
+  ARENA_CONDITIONS: [
+    'PERFECT',     // Ideal playing conditions
+    'WINDY',       // Affects ball trajectory
+    'RAINY',       // Slippery surfaces
+    'HOT',         // Increased energy drain
+    'FOGGY',       // Reduced visibility
+    'NIGHT'        // Different lighting
   ],
   
-  // Random Events (probability per day)
+  // Random Sports Events (probability per quest)
   EVENT_CHANCES: {
-    RIVER_CROSSING: 0.05,
-    BROKEN_WAGON: 0.08,
-    ILLNESS: 0.10,
-    BANDIT_ATTACK: 0.03,
-    WILDLIFE_ENCOUNTER: 0.15,
-    TRADER_MEETING: 0.12,
-    GOOD_WEATHER: 0.20,
-    BAD_WEATHER: 0.15,
-    FIND_SUPPLIES: 0.08,
-    LOST_TRAIL: 0.06
+    ZOMBIE_ATHLETE_ENCOUNTER: 0.15,  // Fallen athlete zombies
+    EQUIPMENT_MALFUNCTION: 0.08,     // Gear breaks during play
+    INJURY: 0.05,                    // Athletic injury
+    RIVAL_TEAM_CHALLENGE: 0.12,      // Competitive encounter
+    SKILL_TRAINER_MEETING: 0.10,     // Learn new abilities
+    BONUS_CHALLENGE: 0.20,           // Extra $Topia opportunity
+    WEATHER_ADVANTAGE: 0.15,         // Favorable conditions
+    HIDDEN_TRAINING_AREA: 0.08,      // Discover secret location
+    SPONSOR_OFFER: 0.06              // Equipment upgrades
   },
   
-  // Store Prices (vary by location)
+  // Sports Store Prices (in Team Funds)
   STORE_PRICES: {
-    food: 0.50,           // per pound
-    ammunition: 0.05,     // per round
-    medicine: 1.00,       // per unit
-    clothing: 5.00,       // per set
-    spare_parts: 2.00,    // per part
-    wagon_repair: 50.00   // full repair
+    energy_drink: 5,        // Restore 25 energy
+    basic_equipment: 20,    // Generic sports gear
+    advanced_gear: 50,      // Sport-specific equipment
+    skill_training: 30,     // Ability upgrade
+    health_pack: 15,        // Heal injuries
+    uniform_upgrade: 25     // Cosmetic enhancement
   },
   
-  // Trail Landmarks/Stops
+  // Sports Cities Journey
   LANDMARKS: [
-    { name: 'Hindman, Kentucky', distance: 0, hasStore: true, isStart: true },
-    { name: 'Kansas River Crossing', distance: 102, hasStore: false },
-    { name: 'Big Blue River Crossing', distance: 185, hasStore: false },
-    { name: 'Fort Kearny', distance: 304, hasStore: true },
-    { name: 'Chimney Rock', distance: 554, hasStore: false },
-    { name: 'Fort Laramie', distance: 640, hasStore: true },
-    { name: 'Independence Rock', distance: 815, hasStore: false },
-    { name: 'South Pass', distance: 947, hasStore: false },
-    { name: 'Fort Bridger', distance: 1025, hasStore: true },
-    { name: 'Soda Springs', distance: 1151, hasStore: false },
-    { name: 'Fort Hall', distance: 1288, hasStore: true },
-    { name: 'Snake River Crossing', distance: 1508, hasStore: false },
-    { name: 'Blue Mountains', distance: 1753, hasStore: false },
-    { name: 'The Dalles', distance: 1898, hasStore: true },
-    { name: 'Oregon City', distance: 2000, hasStore: true, isEnd: true }
+    { name: 'Akron, Ohio', distance: 0, hasStore: true, isStart: true, sport: 'Training Camp' },
+    { name: 'Pittsburgh, Pennsylvania', distance: 134, hasStore: false, sport: 'Steelers Territory' },
+    { name: 'Chicago, Illinois', distance: 458, hasStore: true, sport: 'Windy City Sports' },
+    { name: 'Kansas City, Missouri', distance: 924, hasStore: true, sport: 'Chiefs Kingdom' },
+    { name: 'Denver, Colorado', distance: 1318, hasStore: false, sport: 'Mile High Training' },
+    { name: 'Phoenix, Arizona', distance: 1651, hasStore: true, sport: 'Desert Sports' },
+    { name: 'Las Vegas, Nevada', distance: 1954, hasStore: false, sport: 'Sin City Showdown' },
+    { name: 'Los Angeles, California', distance: 2224, hasStore: true, sport: 'Hollywood Sports' },
+    { name: 'San Francisco, California', distance: 2604, hasStore: false, sport: 'Bay Area Challenge' },
+    { name: 'Dallas, Texas', distance: 3104, hasStore: true, sport: 'Lone Star Sports' },
+    { name: 'Atlanta, Georgia', distance: 3404, hasStore: false, sport: 'Southern Championship' },
+    { name: 'Miami, Florida', distance: 3754, hasStore: true, sport: 'Tropical Tournament' },
+    { name: 'Boston, Massachusetts', distance: 4124, hasStore: false, sport: 'New England Finals' },
+    { name: 'New York City, New York', distance: 4324, hasStore: true, isEnd: true, sport: 'The Ultimate Championship' }
   ],
   
-  // Character Classes/Professions (affects starting money and skills)
-  PROFESSIONS: {
-    BANKER: {
-      name: 'Banker from Boston',
-      startingMoney: 1600,
-      description: 'You have excellent financial resources but limited wilderness skills.'
+  // Athletic Classes/Specializations
+  ATHLETIC_CLASSES: {
+    SOCCER_STRIKER: {
+      name: 'Soccer Striker',
+      startingFunds: 120,
+      specialAbility: 'Sprint Burst',
+      description: 'Speed and precision specialist. Enhanced running and ball control.'
     },
-    CARPENTER: {
-      name: 'Carpenter from Ohio', 
-      startingMoney: 800,
-      description: 'Good at repairs and building. Moderate resources.'
+    BASKETBALL_ALLSTAR: {
+      name: 'Basketball All-Star',
+      startingFunds: 110,
+      specialAbility: 'Slam Dunk',
+      description: 'Vertical movement master. Superior jumping and team coordination.'
     },
-    FARMER: {
-      name: 'Farmer from Illinois',
-      startingMoney: 400,
-      description: 'Experienced with livestock and weather. Limited money but good survival skills.'
+    BASEBALL_SLUGGER: {
+      name: 'Baseball Slugger',
+      startingFunds: 100,
+      specialAbility: 'Home Run Swing',
+      description: 'Power hitter with excellent aim. Ranged attack specialist.'
+    },
+    GRIDIRON_GUARDIAN: {
+      name: 'Gridiron Guardian',
+      startingFunds: 90,
+      specialAbility: 'Tackle Charge',
+      description: 'Tank-like defender. High health and protective abilities.'
+    },
+    TRACK_ATHLETE: {
+      name: 'Track & Field Athlete',
+      startingFunds: 105,
+      specialAbility: 'Marathon Endurance',
+      description: 'Endurance specialist. Enhanced stamina and mobility.'
+    },
+    SWIMMER_DIVER: {
+      name: 'Swimmer/Diver',
+      startingFunds: 115,
+      specialAbility: 'Aqua Affinity',
+      description: 'Aquatic specialist. Superior underwater performance.'
     }
   },
   
@@ -162,93 +183,105 @@ export const GAME_CONFIG = {
 
 // Game State Enums
 export enum GamePhase {
-  MENU = 'menu',
-  CHARACTER_CREATION = 'character_creation', 
-  STORE_SHOPPING = 'store_shopping',
-  TRAVELING = 'traveling',
-  CAMP = 'camp',
-  EVENT = 'event',
-  RIVER_CROSSING = 'river_crossing',
+  MAIN_MENU = 'main_menu',
+  CHARACTER_SELECTION = 'character_selection',
+  TRAINING_AREA = 'training_area',
+  SPORT_CHALLENGE = 'sport_challenge',
+  CHAMPION_BATTLE = 'champion_battle',
+  EQUIPMENT_SHOP = 'equipment_shop',
+  ZOMBIE_ENCOUNTER = 'zombie_encounter',
+  TOURNAMENT = 'tournament',
   GAME_OVER = 'game_over',
-  VICTORY = 'victory'
+  CHAMPION_VICTORY = 'champion_victory'
 }
 
-export enum TravelPace {
-  GRUELING = 'grueling',
-  STRENUOUS = 'strenuous', 
-  STEADY = 'steady',
-  REST = 'rest'
+export enum TrainingIntensity {
+  LIGHT_TRAINING = 'light_training',
+  MODERATE_TRAINING = 'moderate_training',
+  INTENSE_TRAINING = 'intense_training',
+  CHAMPIONSHIP_PREP = 'championship_prep'
 }
 
-export enum FoodRation {
-  FILLING = 'filling',
-  MEAGER = 'meager',
-  BARE_BONES = 'bare_bones'
+export enum SportType {
+  SOCCER = 'soccer',
+  BASKETBALL = 'basketball',
+  BASEBALL = 'baseball',
+  FOOTBALL = 'football',
+  SWIMMING = 'swimming',
+  TRACK_FIELD = 'track_field'
 }
 
-export enum WeatherType {
-  FAIR = 'fair',
+export enum ArenaCondition {
+  PERFECT = 'perfect',
+  WINDY = 'windy',
   RAINY = 'rainy',
-  HOT = 'hot', 
-  COLD = 'cold',
-  STORMY = 'stormy',
-  FOG = 'fog'
+  HOT = 'hot',
+  FOGGY = 'foggy',
+  NIGHT = 'night'
 }
 
-export enum HealthStatus {
+export enum AthleteCondition {
+  PEAK_CONDITION = 'peak_condition',
   EXCELLENT = 'excellent',
   GOOD = 'good',
   FAIR = 'fair',
-  POOR = 'poor',
-  VERY_POOR = 'very_poor',
-  DEAD = 'dead'
+  TIRED = 'tired',
+  EXHAUSTED = 'exhausted',
+  INJURED = 'injured'
 }
 
 // Type Definitions
-export interface Supplies {
-  money: number;
-  food: number;
-  ammunition: number;
-  medicine: number;
-  clothing: number;
-  spare_parts: number;
+export interface AthleteSupplies {
+  topia_tokens: number;
+  energy: number;
+  health: number;
+  equipment_durability: number;
+  skill_points: number;
+  champion_emblems: number;
 }
 
-export interface PartyMember {
+export interface TeamMember {
   name: string;
-  health: number;
-  status: HealthStatus;
-  illness?: string;
+  athleticPerformance: number;
+  condition: AthleteCondition;
+  sport: SportType;
+  specialAbility?: string;
   isPlayer: boolean;
 }
 
 export interface GameState {
   phase: GamePhase;
-  currentDistance: number;
-  supplies: Supplies;
-  party: PartyMember[];
-  currentLandmark: number;
-  travelPace: TravelPace;
-  foodRation: FoodRation;
-  weather: WeatherType;
-  daysOnTrail: number;
-  profession: string;
+  currentLevel: number;
+  supplies: AthleteSupplies;
+  team: TeamMember[];
+  currentRegion: string;
+  trainingIntensity: TrainingIntensity;
+  primarySport: SportType;
+  arenaCondition: ArenaCondition;
+  daysTraining: number;
+  athleticClass: string;
+  championEmblemsCollected: number;
+  zombieAthletesDefeated: number;
 }
 
-export interface TrailEvent {
+export interface SportsEvent {
   id: string;
   title: string;
   description: string;
   choices: EventChoice[];
-  type: 'random' | 'landmark' | 'weather' | 'illness';
+  type: 'zombie_encounter' | 'champion_challenge' | 'training' | 'equipment' | 'tournament';
+  sport?: SportType;
+  difficulty: 'easy' | 'medium' | 'hard' | 'champion';
 }
 
 export interface EventChoice {
   text: string;
   consequences: {
-    supplies?: Partial<Supplies>;
-    health?: number;
+    supplies?: Partial<AthleteSupplies>;
+    athleticPerformance?: number;
     message: string;
     success_chance?: number;
+    tokensReward?: number;
+    skillPointsGained?: number;
   };
 }
