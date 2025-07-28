@@ -232,7 +232,7 @@ export enum AthleteCondition {
 
 // Type Definitions
 export interface AthleteSupplies {
-  topia_tokens: number;
+  team_funds: number;
   energy: number;
   health: number;
   equipment_durability: number;

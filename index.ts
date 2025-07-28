@@ -1,9 +1,9 @@
 /**
- * Final Buzzer Trail - Oregon Trail Style Game
+ * Final Buzzer Trail - Sports Arena MMORPG
  * 
- * A UI-focused multiplayer survival game where players manage
- * resources, make decisions, and travel the historic Oregon Trail
- * from Independence, Missouri to Oregon City.
+ * A sports-themed multiplayer game where players become athletic champions,
+ * face fallen athlete zombies, and collect Champion Emblems in Arena Prime.
+ * Features sleek UI, $Topia token economy, and athletic class specializations.
  */
 
 import {
@@ -23,33 +23,40 @@ import worldMap from './assets/map.json';
 const startWithoutMap = false;
 
 startServer(world => {
-  console.log(`🚌 ${GAME_CONFIG.GAME_NAME} v${GAME_CONFIG.GAME_VERSION} starting...`);
+  console.log(`🏟️ ${GAME_CONFIG.GAME_NAME} v${GAME_CONFIG.GAME_VERSION} starting...`);
   
   // Load the actual map
   if (!startWithoutMap) {
     world.loadMap(worldMap);
   }
   
-  // Set up lighting for the minimal world
-  world.setAmbientLightIntensity(0.8);
-  world.setDirectionalLightIntensity(5);
+  // Set up lighting for Arena Prime
+  world.setAmbientLightIntensity(0.9);
+  world.setDirectionalLightIntensity(6);
   
   // Initialize the Game Manager
   GameManager.instance.setupGame(world);
   
-  // Handle player joining the trail
+  // Handle UI messages from players
+  world.on('ui', ({ player, data }) => {
+    GameManager.instance.handlePlayerAction(player, data.type, data);
+  });
+  
+  // Handle player joining Arena Prime
   world.on(PlayerEvent.JOINED_WORLD, ({ player }) => {
-    console.log(`👤 ${player.username} joined the trail`);
+    console.log(`⚽ ${player.username} entered Arena Prime`);
     handlePlayerJoin(world, player);
   });
   
   // Handle player leaving
   world.on(PlayerEvent.LEFT_WORLD, ({ player }) => {
-    console.log(`👋 ${player.username} left the trail`);
+    console.log(`👋 ${player.username} left Arena Prime`);
     handlePlayerLeave(world, player);
   });
   
-  console.log(`✅ Final Buzzer Trail server ready!`);
+  console.log(`🏟️ Final Buzzer Trail server ready!`);
+  console.log(`🎮 Players can now join and journey from Akron to NYC!`);
+  console.log(`⚽ Defeat fallen athlete zombies on your sports trail adventure!`);
 });
 
 /**
@@ -61,10 +68,10 @@ function handlePlayerJoin(world: World, player: Player): void {
   
   // Send welcome message
   const welcomeMessages = [
-    `🚌 Welcome to the Final Buzzer Trail, ${player.username}!`,
-    '📍 Your journey from Hindman, Kentucky to Oregon City begins here.',
-    '💡 Use the UI to manage your supplies, make decisions, and survive the trail.',
-    '🎯 Your goal: Travel 2,000 miles without running out of supplies or losing your party!'
+    `🏟️ Welcome to Final Buzzer Trail, ${player.username}!`,
+    '⚽ Choose your athletic class and begin your sports journey from Akron to NYC.',
+    '💰 Earn Team Funds through challenges and defeating fallen athletes.',
+    '🏆 Your goal: Complete the trail and become the ultimate Sport Champion!'
   ];
   
   // Send each message with a delay for dramatic effect
@@ -95,4 +102,4 @@ function handlePlayerLeave(world: World, player: Player): void {
 }
 
 // Log startup complete
-console.log('🌟 Final Buzzer Trail - Ready for Adventure!');
+console.log('🏆 Final Buzzer Trail Ready for Sports Champions!');

@@ -3,7 +3,10 @@
     "allow": [
       "Bash(mkdir:*)",
       "WebFetch(domain:github.com)",
-      "WebFetch(domain:dev.hytopia.com)"
+      "WebFetch(domain:dev.hytopia.com)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

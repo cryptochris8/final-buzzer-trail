@@ -4,7 +4,7 @@ import {
   GameServer,
 } from 'hytopia';
 
-import { GAME_CONFIG, GamePhase, GameState, Supplies, PartyMember, TravelPace, FoodRation, WeatherType, HealthStatus } from '../gameConfig';
+import { GAME_CONFIG, GamePhase, GameState, AthleteSupplies, TeamMember, TrainingIntensity, SportType, ArenaCondition, AthleteCondition } from '../gameConfig';
 import { TrailPlayerEntity } from './TrailPlayerEntity';
 import { EventManager } from './EventManager';
 
@@ -15,7 +15,7 @@ export class GameManager {
   private _players: Map<string, TrailPlayerEntity> = new Map();
   private _gameStates: Map<string, GameState> = new Map();
   private _eventManager: EventManager;
-  private _dayTimer: NodeJS.Timeout | undefined;
+  private _challengeTimer: NodeJS.Timeout | undefined;
   private _isGameRunning: boolean = false;
 
   private constructor() {
@@ -23,28 +23,28 @@ export class GameManager {
   }
 
   /**
-   * Initialize the game world and systems
+   * Initialize the Arena Prime game world and systems
    */
   public setupGame(world: World): void {
     this.world = world;
-    console.log('🎮 GameManager: Setting up Final Buzzer Trail...');
+    console.log('🏟️ GameManager: Setting up Arena Prime...');
     
-    // Start the daily cycle (every 30 seconds = 1 day for demo purposes)
-    this._startDailyCycle();
+    // Start the challenge cycle (every 45 seconds = 1 training session)
+    this._startChallengeCycle();
     
-    // Create bedrock floor to prevent falling
-    this._createMinimalWorld();
+    // Create sports arena world
+    this._createArenaWorld();
     
-    console.log('✅ GameManager: Game setup complete');
+    console.log('✅ GameManager: Arena Prime setup complete');
   }
 
   /**
-   * Spawn a new player on the trail
+   * Spawn a new athlete in Arena Prime
    */
   public spawnPlayer(player: Player): void {
     if (!this.world) return;
 
-    console.log(`👤 GameManager: Spawning player ${player.username}`);
+    console.log(`🏃 GameManager: Spawning athlete ${player.username}`);
     
     // Create player entity
     const playerEntity = new TrailPlayerEntity(player);
@@ -52,18 +52,20 @@ export class GameManager {
     
     // Initialize player's game state
     const gameState: GameState = {
-      phase: GamePhase.CHARACTER_CREATION,
-      currentDistance: 0,
+      phase: GamePhase.CHARACTER_SELECTION,
+      currentLevel: 1,
       supplies: { ...GAME_CONFIG.STARTING_SUPPLIES },
-      party: [
-        { name: player.username, health: 100, status: HealthStatus.EXCELLENT, isPlayer: true }
+      team: [
+        { name: player.username, athleticPerformance: 100, condition: AthleteCondition.EXCELLENT, sport: SportType.SOCCER, isPlayer: true }
       ],
-      currentLandmark: 0,
-      travelPace: TravelPace.STEADY,
-      foodRation: FoodRation.FILLING,
-      weather: WeatherType.FAIR,
-      daysOnTrail: 0,
-      profession: 'BANKER' // Default, will be chosen by player
+      currentRegion: 'CHAMPION_CITY',
+      trainingIntensity: TrainingIntensity.MODERATE_TRAINING,
+      primarySport: SportType.SOCCER,
+      arenaCondition: ArenaCondition.PERFECT,
+      daysTraining: 0,
+      athleticClass: 'SOCCER_STRIKER', // Default, will be chosen by player
+      championEmblemsCollected: 0,
+      zombieAthletesDefeated: 0
     };
 
     // Store player and game state
@@ -74,19 +76,19 @@ export class GameManager {
     player.ui.load('ui/index.html');
     this._sendGameStateToPlayer(player);
     
-    console.log(`✅ GameManager: Player ${player.username} spawned successfully`);
+    console.log(`✅ GameManager: Athlete ${player.username} spawned successfully`);
   }
 
   /**
-   * Remove a player from the game
+   * Remove a player from Arena Prime
    */
   public removePlayer(player: Player): void {
-    console.log(`👋 GameManager: Removing player ${player.username}`);
+    console.log(`👋 GameManager: Removing athlete ${player.username}`);
     
     this._players.delete(player.id);
     this._gameStates.delete(player.id);
     
-    console.log(`✅ GameManager: Player ${player.username} removed`);
+    console.log(`✅ GameManager: Athlete ${player.username} removed`);
   }
 
   /**
@@ -106,41 +108,41 @@ export class GameManager {
   }
 
   /**
-   * Handle player decisions and actions
+   * Handle athlete actions and sports challenges
    */
   public handlePlayerAction(player: Player, action: string, data?: any): void {
     const gameState = this._gameStates.get(player.id);
     if (!gameState) return;
 
-    console.log(`🎯 GameManager: Player ${player.username} action: ${action}`);
+    console.log(`⚽ GameManager: Athlete ${player.username} action: ${action}`);
 
     switch (action) {
-      case 'choose-profession':
-        this._handleProfessionChoice(player, data.profession);
+      case 'select-athletic-class':
+        this._handleClassSelection(player, data.class);
         break;
-      case 'buy-supplies':
-        this._handleSupplyPurchase(player, data);
+      case 'start-sport-challenge':
+        this._handleSportChallenge(player, data);
         break;
-      case 'start-journey':
-        this._handleStartJourney(player);
+      case 'open-equipment-shop':
+        this._handleEquipmentShop(player);
         break;
-      case 'set-pace':
-        this._handleSetPace(player, data.pace);
+      case 'purchase-item':
+        this._handleItemPurchase(player, data);
         break;
-      case 'set-rations':
-        this._handleSetRations(player, data.rations);
+      case 'zombie-encounter-triggered':
+        this._handleZombieEncounter(player);
         break;
-      case 'continue-trail':
-        this._handleContinueTrail(player);
+      case 'zombie-defeated':
+        this._handleZombieDefeated(player, data.success);
         break;
-      case 'rest':
-        this._handleRest(player);
+      case 'zombie-avoided':
+        this._handleZombieAvoided(player);
         break;
-      case 'hunt':
-        this._handleHunt(player);
+      case 'bonus-event':
+        this._handleBonusEvent(player, data);
         break;
-      case 'trade':
-        this._handleTrade(player, data);
+      case 'challenge-sport-champion':
+        this._handleChampionChallenge(player, data);
         break;
       default:
         console.log(`⚠️ GameManager: Unknown action ${action}`);
@@ -148,39 +150,30 @@ export class GameManager {
   }
 
   /**
-   * Process daily events for all players
+   * Process training events for all athletes
    */
-  private _processDailyEvents(): void {
+  private _processTrainingEvents(): void {
     this._players.forEach((playerEntity, playerId) => {
       const gameState = this._gameStates.get(playerId);
-      if (!gameState || gameState.phase !== GamePhase.TRAVELING) return;
+      if (!gameState || gameState.phase !== GamePhase.SPORT_CHALLENGE) return;
 
-      // Advance day
-      gameState.daysOnTrail++;
+      // Advance training day
+      gameState.daysTraining++;
 
-      // Travel based on pace
-      const dailyDistance = GAME_CONFIG.DAILY_TRAVEL_DISTANCE[gameState.travelPace];
-      gameState.currentDistance += dailyDistance;
+      // Consume energy based on training intensity
+      this._consumeEnergy(gameState);
 
-      // Consume food
-      this._consumeFood(gameState);
+      // Update arena conditions
+      this._updateArenaConditions(gameState);
 
-      // Update weather
-      this._updateWeather(gameState);
+      // Check for random sports events
+      this._checkRandomSportsEvents(playerEntity.player, gameState);
 
-      // Check for random events
-      this._checkRandomEvents(playerEntity.player, gameState);
+      // Update athletic performance
+      this._updateAthleteCondition(gameState);
 
-      // Update health based on conditions
-      this._updatePartyHealth(gameState);
-
-      // Check for landmarks
-      this._checkLandmarks(playerEntity.player, gameState);
-
-      // Check victory condition
-      if (gameState.currentDistance >= GAME_CONFIG.TRAIL_DISTANCE) {
-        this._handleVictory(playerEntity.player, gameState);
-      }
+      // Check for level progression
+      this._checkLevelProgression(playerEntity.player, gameState);
 
       // Send updated state to player
       this._sendGameStateToPlayer(playerEntity.player);
@@ -198,348 +191,504 @@ export class GameManager {
       type: 'game-state-update',
       gameState: gameState,
       landmarks: GAME_CONFIG.LANDMARKS,
-      currentLandmark: this._getCurrentLandmark(gameState)
+      currentRegion: this._getCurrentRegion(gameState)
     });
   }
 
   /**
-   * Handle profession selection
+   * Handle athletic class selection
    */
-  private _handleProfessionChoice(player: Player, profession: string): void {
+  private _handleClassSelection(player: Player, athleticClass: string): void {
     const gameState = this._gameStates.get(player.id);
     if (!gameState) return;
 
-    gameState.profession = profession;
-    gameState.phase = GamePhase.STORE_SHOPPING;
+    gameState.athleticClass = athleticClass;
+    gameState.phase = GamePhase.TRAINING_AREA;
 
-    // Update starting money based on profession
-    const professionConfig = GAME_CONFIG.PROFESSIONS[profession as keyof typeof GAME_CONFIG.PROFESSIONS];
-    if (professionConfig) {
-      gameState.supplies.money = professionConfig.startingMoney;
+    // Update starting supplies based on class
+    const classConfig = GAME_CONFIG.ATHLETIC_CLASSES[athleticClass as keyof typeof GAME_CONFIG.ATHLETIC_CLASSES];
+    if (classConfig) {
+      gameState.supplies.team_funds = classConfig.startingFunds;
+      
+      // Set primary sport based on class
+      switch (athleticClass) {
+        case 'SOCCER_STRIKER':
+          gameState.primarySport = SportType.SOCCER;
+          break;
+        case 'BASKETBALL_ALLSTAR':
+          gameState.primarySport = SportType.BASKETBALL;
+          break;
+        case 'BASEBALL_SLUGGER':
+          gameState.primarySport = SportType.BASEBALL;
+          break;
+        case 'GRIDIRON_GUARDIAN':
+          gameState.primarySport = SportType.FOOTBALL;
+          break;
+        case 'TRACK_ATHLETE':
+          gameState.primarySport = SportType.TRACK_FIELD;
+          break;
+        case 'SWIMMER_DIVER':
+          gameState.primarySport = SportType.SWIMMING;
+          break;
+      }
+      
+      // Update team member sport
+      gameState.team[0].sport = gameState.primarySport;
     }
 
     this._sendGameStateToPlayer(player);
 
     this.world?.chatManager.sendPlayerMessage(
       player, 
-      `You are now a ${professionConfig?.name}. Visit the general store to buy supplies!`,
+      `You are now a ${classConfig?.name}! Begin your training to become a champion!`,
       '00AA00'
     );
   }
 
   /**
-   * Handle supply purchases
+   * Handle sport challenges
    */
-  private _handleSupplyPurchase(player: Player, purchase: { item: string, quantity: number }): void {
+  private _handleSportChallenge(player: Player, challengeData: { class?: string, energyCost?: number }): void {
     const gameState = this._gameStates.get(player.id);
     if (!gameState) return;
 
-    const { item, quantity } = purchase;
-    const price = GAME_CONFIG.STORE_PRICES[item as keyof typeof GAME_CONFIG.STORE_PRICES];
-    const totalCost = price * quantity;
+    const energyCost = challengeData.energyCost || GAME_CONFIG.ENERGY_COSTS.BASIC_CHALLENGE;
+    
+    if (gameState.supplies.energy < energyCost) {
+      player.ui.sendData({
+        type: 'challenge-result',
+        success: false,
+        message: 'Not enough energy for this challenge!'
+      });
+      return;
+    }
 
-    if (gameState.supplies.money >= totalCost) {
-      gameState.supplies.money -= totalCost;
-      gameState.supplies[item as keyof Supplies] += quantity;
+    // Consume energy
+    gameState.supplies.energy -= energyCost;
+    
+    // Challenge success rate based on athletic performance and conditions
+    const baseSuccessRate = 0.7;
+    const conditionModifier = this._getConditionModifier(gameState);
+    const successRate = Math.min(0.95, baseSuccessRate + conditionModifier);
+    
+    const success = Math.random() < successRate;
+    
+    if (success) {
+      const baseReward = 25;
+      const bonusReward = Math.floor(Math.random() * 15) + 5;
+      const totalReward = baseReward + bonusReward;
+      
+      gameState.supplies.team_funds += totalReward;
+      
+      // Experience gain
+      const expGain = Math.floor(Math.random() * 20) + 10;
+      this._addExperience(gameState, expGain);
+      
+      player.ui.sendData({
+        type: 'challenge-result',
+        success: true,
+        message: `Challenge completed! Earned ${totalReward} Team Funds!`
+      });
+      
+      this.world?.chatManager.sendPlayerMessage(
+        player,
+        `🏆 Sport challenge completed! +${totalReward} Team Funds`,
+        '00AA00'
+      );
+    } else {
+      // Small consolation reward
+      const consolationReward = 5;
+      gameState.supplies.team_funds += consolationReward;
+      
+      player.ui.sendData({
+        type: 'challenge-result',
+        success: false,
+        message: `Challenge failed, but you gained valuable experience! +${consolationReward} Team Funds`
+      });
+      
+      this.world?.chatManager.sendPlayerMessage(
+        player,
+        '💪 Challenge failed, but you\'re getting stronger!',
+        'FFAA00'
+      );
+    }
+    
+    this._sendGameStateToPlayer(player);
+  }
 
+  /**
+   * Handle equipment shop
+   */
+  private _handleEquipmentShop(player: Player): void {
+    player.ui.sendData({
+      type: 'shop-opened',
+      items: GAME_CONFIG.STORE_PRICES
+    });
+  }
+
+  /**
+   * Handle item purchases
+   */
+  private _handleItemPurchase(player: Player, purchase: { item: string, cost: number }): void {
+    const gameState = this._gameStates.get(player.id);
+    if (!gameState) return;
+
+    const { item, cost } = purchase;
+    
+    if (gameState.supplies.team_funds >= cost) {
+      gameState.supplies.team_funds -= cost;
+      
+      // Apply item effects
+      switch (item) {
+        case 'energy_drink':
+          gameState.supplies.energy = Math.min(100, gameState.supplies.energy + 25);
+          break;
+        case 'health_pack':
+          gameState.supplies.health = Math.min(100, gameState.supplies.health + 30);
+          break;
+        case 'training_gear':
+          gameState.supplies.skill_points += 5;
+          break;
+      }
+      
       this._sendGameStateToPlayer(player);
       
       this.world?.chatManager.sendPlayerMessage(
         player,
-        `Purchased ${quantity} ${item} for $${totalCost.toFixed(2)}`,
+        `Purchased ${item.replace('_', ' ')} for ${cost} Team Funds`,
         '00AA00'
       );
     } else {
       this.world?.chatManager.sendPlayerMessage(
         player,
-        `Not enough money! Need $${totalCost.toFixed(2)}, have $${gameState.supplies.money.toFixed(2)}`,
+        `Not enough Team Funds! Need ${cost}, have ${gameState.supplies.team_funds}`,
         'FF0000'
       );
     }
   }
 
   /**
-   * Start the journey
+   * Handle zombie athlete encounters
    */
-  private _handleStartJourney(player: Player): void {
-    const gameState = this._gameStates.get(player.id);
-    if (!gameState) return;
-
-    gameState.phase = GamePhase.TRAVELING;
-    this._sendGameStateToPlayer(player);
-
+  private _handleZombieEncounter(player: Player): void {
     this.world?.chatManager.sendPlayerMessage(
       player,
-      '🚌 The trail begins! May fortune favor your journey to Oregon!',
-      '00AA00'
+      '⚠️ A fallen athlete blocks your path! Once a champion, now corrupted...',
+      'FF4444'
     );
   }
 
   /**
-   * Set travel pace
+   * Handle zombie defeat results
    */
-  private _handleSetPace(player: Player, pace: string): void {
+  private _handleZombieDefeated(player: Player, success: boolean): void {
     const gameState = this._gameStates.get(player.id);
     if (!gameState) return;
 
-    gameState.travelPace = pace as TravelPace;
-    this._sendGameStateToPlayer(player);
-
-    const paceDescriptions = {
-      [TravelPace.GRUELING]: 'Grueling pace - fast but dangerous',
-      [TravelPace.STRENUOUS]: 'Strenuous pace - moderate speed',
-      [TravelPace.STEADY]: 'Steady pace - safe and sure',
-      [TravelPace.REST]: 'Resting - no travel today'
-    };
-
-    this.world?.chatManager.sendPlayerMessage(
-      player,
-      `Travel pace set to: ${paceDescriptions[pace as TravelPace]}`,
-      '00AA00'
-    );
-  }
-
-  /**
-   * Set food rations
-   */
-  private _handleSetRations(player: Player, rations: string): void {
-    const gameState = this._gameStates.get(player.id);
-    if (!gameState) return;
-
-    gameState.foodRation = rations as FoodRation;
-    this._sendGameStateToPlayer(player);
-
-    this.world?.chatManager.sendPlayerMessage(
-      player,
-      `Food rations set to: ${rations}`,
-      '00AA00'
-    );
-  }
-
-  /**
-   * Continue on the trail
-   */
-  private _handleContinueTrail(player: Player): void {
-    const gameState = this._gameStates.get(player.id);
-    if (!gameState) return;
-
-    if (gameState.phase === GamePhase.CAMP) {
-      gameState.phase = GamePhase.TRAVELING;
-      this._sendGameStateToPlayer(player);
+    if (success) {
+      gameState.zombieAthletesDefeated++;
       
-      this.world?.chatManager.sendPlayerMessage(player, 'Back on the trail!', '00AA00');
-    }
-  }
-
-  /**
-   * Rest for the day
-   */
-  private _handleRest(player: Player): void {
-    const gameState = this._gameStates.get(player.id);
-    if (!gameState) return;
-
-    // Improve health slightly
-    gameState.party.forEach(member => {
-      if (member.health < 100) {
-        member.health = Math.min(100, member.health + 10);
-      }
-    });
-
-    this._sendGameStateToPlayer(player);
-    this.world?.chatManager.sendPlayerMessage(player, 'Your party rests and recovers.', '00AA00');
-  }
-
-  /**
-   * Attempt to hunt for food
-   */
-  private _handleHunt(player: Player): void {
-    const gameState = this._gameStates.get(player.id);
-    if (!gameState) return;
-
-    if (gameState.supplies.ammunition >= 10) {
-      gameState.supplies.ammunition -= 10;
+      // Big reward for defeating fallen athletes
+      const baseReward = 75;
+      const bonusReward = Math.floor(Math.random() * 25);
+      const totalReward = baseReward + bonusReward;
       
-      // Random hunting success
-      const success = Math.random() < 0.6;
-      if (success) {
-        const meat = Math.floor(Math.random() * 50) + 20;
-        gameState.supplies.food += meat;
+      gameState.supplies.team_funds += totalReward;
+      gameState.supplies.energy -= 35;
+      
+      // Chance for champion emblem
+      if (Math.random() < 0.15) {
+        gameState.supplies.champion_emblems += 1;
+        gameState.championEmblemsCollected++;
+        
+        player.ui.sendData({
+          type: 'champion-emblem-earned'
+        });
         
         this.world?.chatManager.sendPlayerMessage(
           player,
-          `Successful hunt! Gained ${meat} pounds of food.`,
-          '00AA00'
-        );
-      } else {
-        this.world?.chatManager.sendPlayerMessage(
-          player,
-          'Hunting unsuccessful. No food gained.',
-          'FFAA00'
+          '🏆 Champion Emblem recovered from the fallen athlete!',
+          '00FF00'
         );
       }
       
-      this._sendGameStateToPlayer(player);
-    } else {
+      // Large experience gain
+      this._addExperience(gameState, 35);
+      
       this.world?.chatManager.sendPlayerMessage(
         player,
-        'Not enough ammunition to hunt!',
+        `💀 Fallen athlete defeated! Their spirit is at peace. +${totalReward} Team Funds`,
+        '00AA00'
+      );
+    } else {
+      gameState.supplies.health -= 30;
+      gameState.supplies.energy -= 25;
+      
+      this.world?.chatManager.sendPlayerMessage(
+        player,
+        '💥 The corrupted champion was too strong. You retreat wounded.',
         'FF0000'
       );
     }
-  }
-
-  /**
-   * Handle trading
-   */
-  private _handleTrade(player: Player, tradeData: any): void {
-    // Implement trading logic here
-    this.world?.chatManager.sendPlayerMessage(player, 'Trading not yet implemented!', 'FFAA00');
-  }
-
-  /**
-   * Victory condition
-   */
-  private _handleVictory(player: Player, gameState: GameState): void {
-    gameState.phase = GamePhase.VICTORY;
-    
-    this.world?.chatManager.sendPlayerMessage(
-      player,
-      '🎉 Congratulations! You have reached Oregon City!',
-      '00FF00'
-    );
     
     this._sendGameStateToPlayer(player);
   }
 
   /**
-   * Consume food daily
+   * Handle zombie avoidance
    */
-  private _consumeFood(gameState: GameState): void {
-    const partySize = gameState.party.length;
-    const dailyConsumption = GAME_CONFIG.FOOD_RATIONS[gameState.foodRation] * partySize;
+  private _handleZombieAvoided(player: Player): void {
+    const gameState = this._gameStates.get(player.id);
+    if (!gameState) return;
+
+    gameState.supplies.energy -= 15;
+    this._sendGameStateToPlayer(player);
     
-    gameState.supplies.food = Math.max(0, gameState.supplies.food - dailyConsumption);
+    this.world?.chatManager.sendPlayerMessage(
+      player,
+      '🏃 You found another path around the fallen athlete.',
+      '00AAFF'
+    );
   }
 
   /**
-   * Update weather randomly
+   * Handle bonus events
    */
-  private _updateWeather(gameState: GameState): void {
-    if (Math.random() < 0.2) { // 20% chance to change weather
-      const weatherTypes = Object.values(WeatherType);
-      gameState.weather = weatherTypes[Math.floor(Math.random() * weatherTypes.length)];
+  private _handleBonusEvent(player: Player, eventData: any): void {
+    this.world?.chatManager.sendPlayerMessage(
+      player,
+      '✨ ' + eventData.message,
+      '00AA00'
+    );
+  }
+
+  /**
+   * Handle champion challenges
+   */
+  private _handleChampionChallenge(player: Player, championData: any): void {
+    const gameState = this._gameStates.get(player.id);
+    if (!gameState) return;
+
+    // This would be a major boss battle - placeholder for now
+    this.world?.chatManager.sendPlayerMessage(
+      player,
+      '🥊 Sport Champion battles not yet implemented!',
+      'FFAA00'
+    );
+  }
+
+  /**
+   * Add experience and handle level ups
+   */
+  private _addExperience(gameState: GameState, exp: number): void {
+    // Experience is stored as a percentage towards next level
+    const currentExp = gameState.currentLevel * 100 + (gameState as any).experience || 0;
+    const newExp = currentExp + exp;
+    
+    const newLevel = Math.floor(newExp / 100);
+    const remainingExp = newExp % 100;
+    
+    if (newLevel > gameState.currentLevel) {
+      gameState.currentLevel = newLevel;
+      (gameState as any).experience = remainingExp;
+      
+      // Level up bonuses
+      gameState.supplies.skill_points += 3;
+      gameState.supplies.team_funds += 20;
+    } else {
+      (gameState as any).experience = remainingExp;
     }
   }
 
   /**
-   * Check for random events
+   * Get condition modifier for success rates
    */
-  private _checkRandomEvents(player: Player, gameState: GameState): void {
-    // Use event manager to check for and trigger random events
-    this._eventManager.checkForEvents(player, gameState);
+  private _getConditionModifier(gameState: GameState): number {
+    let modifier = 0;
+    
+    // Health effects
+    if (gameState.supplies.health > 80) modifier += 0.1;
+    else if (gameState.supplies.health < 30) modifier -= 0.15;
+    
+    // Energy effects
+    if (gameState.supplies.energy > 70) modifier += 0.05;
+    else if (gameState.supplies.energy < 20) modifier -= 0.1;
+    
+    // Arena condition effects
+    switch (gameState.arenaCondition) {
+      case ArenaCondition.PERFECT:
+        modifier += 0.1;
+        break;
+      case ArenaCondition.RAINY:
+      case ArenaCondition.FOGGY:
+        modifier -= 0.05;
+        break;
+      case ArenaCondition.HOT:
+        modifier -= 0.03;
+        break;
+    }
+    
+    return modifier;
   }
 
   /**
-   * Update party health based on conditions
+   * Consume energy based on training intensity
    */
-  private _updatePartyHealth(gameState: GameState): void {
-    gameState.party.forEach(member => {
-      // Health effects based on food, weather, pace, etc.
-      let healthChange = 0;
-      
-      // Food effects
-      if (gameState.supplies.food <= 0) {
-        healthChange -= 15; // Starvation
-      } else if (gameState.foodRation === FoodRation.BARE_BONES) {
-        healthChange -= 5;
-      } else if (gameState.foodRation === FoodRation.MEAGER) {
-        healthChange -= 2;
+  private _consumeEnergy(gameState: GameState): void {
+    const energyCosts = {
+      [TrainingIntensity.LIGHT_TRAINING]: 5,
+      [TrainingIntensity.MODERATE_TRAINING]: 10,
+      [TrainingIntensity.INTENSE_TRAINING]: 20,
+      [TrainingIntensity.CHAMPIONSHIP_PREP]: 30
+    };
+    
+    const energyCost = energyCosts[gameState.trainingIntensity];
+    gameState.supplies.energy = Math.max(0, gameState.supplies.energy - energyCost);
+  }
+
+  /**
+   * Update arena conditions randomly
+   */
+  private _updateArenaConditions(gameState: GameState): void {
+    if (Math.random() < 0.15) { // 15% chance to change conditions
+      const conditions = Object.values(ArenaCondition);
+      gameState.arenaCondition = conditions[Math.floor(Math.random() * conditions.length)];
+    }
+  }
+
+  /**
+   * Check for random sports events
+   */
+  private _checkRandomSportsEvents(player: Player, gameState: GameState): void {
+    // Random events based on GAME_CONFIG.EVENT_CHANCES
+    Object.entries(GAME_CONFIG.EVENT_CHANCES).forEach(([eventType, chance]) => {
+      if (Math.random() < chance) {
+        this._triggerSportsEvent(player, gameState, eventType);
       }
-      
-      // Weather effects
-      if (gameState.weather === WeatherType.STORMY || gameState.weather === WeatherType.COLD) {
-        healthChange -= 3;
-      }
-      
-      // Pace effects
-      if (gameState.travelPace === TravelPace.GRUELING) {
-        healthChange -= 4;
-      } else if (gameState.travelPace === TravelPace.REST) {
-        healthChange += 5;
-      }
-      
-      member.health = Math.max(0, Math.min(100, member.health + healthChange));
-      
-      // Update health status
-      if (member.health >= 80) member.status = HealthStatus.EXCELLENT;
-      else if (member.health >= 60) member.status = HealthStatus.GOOD;
-      else if (member.health >= 40) member.status = HealthStatus.FAIR;
-      else if (member.health >= 20) member.status = HealthStatus.POOR;
-      else if (member.health > 0) member.status = HealthStatus.VERY_POOR;
-      else member.status = HealthStatus.DEAD;
     });
   }
 
   /**
-   * Check if player has reached a landmark
+   * Trigger specific sports events
    */
-  private _checkLandmarks(player: Player, gameState: GameState): void {
-    const currentLandmark = this._getCurrentLandmark(gameState);
-    if (currentLandmark > gameState.currentLandmark) {
-      gameState.currentLandmark = currentLandmark;
-      const landmark = GAME_CONFIG.LANDMARKS[currentLandmark];
+  private _triggerSportsEvent(player: Player, gameState: GameState, eventType: string): void {
+    switch (eventType) {
+      case 'ZOMBIE_ATHLETE_ENCOUNTER':
+        player.ui.sendData({ type: 'zombie-encounter' });
+        break;
+      case 'EQUIPMENT_MALFUNCTION':
+        gameState.supplies.equipment_durability -= 20;
+        this.world?.chatManager.sendPlayerMessage(player, '⚙️ Equipment malfunction! Durability decreased.', 'FFAA00');
+        break;
+      case 'SKILL_TRAINER_MEETING':
+        gameState.supplies.skill_points += 2;
+        this.world?.chatManager.sendPlayerMessage(player, '👨‍🏫 Met a skill trainer! +2 Skill Points', '00AA00');
+        break;
+      case 'BONUS_CHALLENGE':
+        gameState.supplies.team_funds += 15;
+        this.world?.chatManager.sendPlayerMessage(player, '💰 Bonus challenge completed! +15 Team Funds', '00AA00');
+        break;
+    }
+  }
+
+  /**
+   * Update athlete condition based on various factors
+   */
+  private _updateAthleteCondition(gameState: GameState): void {
+    gameState.team.forEach(member => {
+      let performanceChange = 0;
+      
+      // Energy effects
+      if (gameState.supplies.energy <= 10) {
+        performanceChange -= 10; // Exhaustion
+      } else if (gameState.supplies.energy >= 80) {
+        performanceChange += 2; // Well rested
+      }
+      
+      // Health effects
+      if (gameState.supplies.health <= 20) {
+        performanceChange -= 15; // Injured
+      } else if (gameState.supplies.health >= 90) {
+        performanceChange += 3; // Peak health
+      }
+      
+      // Training intensity effects
+      if (gameState.trainingIntensity === TrainingIntensity.CHAMPIONSHIP_PREP) {
+        performanceChange += 5; // Intense training pays off
+      } else if (gameState.trainingIntensity === TrainingIntensity.LIGHT_TRAINING) {
+        performanceChange -= 2; // Not pushing hard enough
+      }
+      
+      member.athleticPerformance = Math.max(0, Math.min(100, member.athleticPerformance + performanceChange));
+      
+      // Update condition status
+      if (member.athleticPerformance >= 90) member.condition = AthleteCondition.PEAK_CONDITION;
+      else if (member.athleticPerformance >= 80) member.condition = AthleteCondition.EXCELLENT;
+      else if (member.athleticPerformance >= 65) member.condition = AthleteCondition.GOOD;
+      else if (member.athleticPerformance >= 45) member.condition = AthleteCondition.FAIR;
+      else if (member.athleticPerformance >= 25) member.condition = AthleteCondition.TIRED;
+      else if (member.athleticPerformance > 10) member.condition = AthleteCondition.EXHAUSTED;
+      else member.condition = AthleteCondition.INJURED;
+    });
+  }
+
+  /**
+   * Check for level progression and achievements
+   */
+  private _checkLevelProgression(player: Player, gameState: GameState): void {
+    // Check if player has collected all emblems
+    if (gameState.championEmblemsCollected >= 6) {
+      gameState.phase = GamePhase.CHAMPION_VICTORY;
       
       this.world?.chatManager.sendPlayerMessage(
         player,
-        `🏛️ You have reached ${landmark.name}!`,
-        '00AAFF'
+        '🎉 VICTORY! You have collected all Champion Emblems and become the ultimate Sport Champion!',
+        '00FF00'
       );
-      
-      if (landmark.hasStore) {
-        gameState.phase = GamePhase.STORE_SHOPPING;
-      }
     }
   }
 
   /**
-   * Get current landmark index based on distance
+   * Get current region based on level/progress
    */
-  private _getCurrentLandmark(gameState: GameState): number {
-    for (let i = GAME_CONFIG.LANDMARKS.length - 1; i >= 0; i--) {
-      if (gameState.currentDistance >= GAME_CONFIG.LANDMARKS[i].distance) {
-        return i;
-      }
-    }
-    return 0;
+  private _getCurrentRegion(gameState: GameState): any {
+    return GAME_CONFIG.REGIONS.CHAMPION_CITY; // Simplified for now
   }
 
   /**
-   * Start the daily cycle timer
+   * Start the training/challenge cycle timer
    */
-  private _startDailyCycle(): void {
-    // Process a day every 30 seconds for demo purposes
-    // In a real game, this might be much longer
-    this._dayTimer = setInterval(() => {
-      this._processDailyEvents();
-    }, 30000);
+  private _startChallengeCycle(): void {
+    // Process training events every 45 seconds
+    this._challengeTimer = setInterval(() => {
+      this._processTrainingEvents();
+    }, 45000);
     
     this._isGameRunning = true;
-    console.log('⏰ GameManager: Daily cycle started (30s intervals)');
+    console.log('⏰ GameManager: Training cycle started (45s intervals)');
   }
 
   /**
-   * Create a minimal world with just a platform
+   * Create Arena Prime world with sports facilities
    */
-  private _createMinimalWorld(): void {
+  private _createArenaWorld(): void {
     if (!this.world) return;
 
-    // Create a simple platform to stand on
-    for (let x = -20; x <= 20; x++) {
-      for (let z = -20; z <= 20; z++) {
-        this.world.chunkLattice.setBlock({ x, y: -1, z }, 1); // Grass block
+    // Create sports arena platform
+    for (let x = -30; x <= 30; x++) {
+      for (let z = -30; z <= 30; z++) {
+        this.world.chunkLattice.setBlock({ x, y: -1, z }, 1); // Grass block for sports field
       }
     }
     
-    console.log('🌍 GameManager: Minimal world created');
+    // Create different sport zones (simplified)
+    // Soccer field area
+    for (let x = -10; x <= 10; x++) {
+      for (let z = -5; z <= 5; z++) {
+        this.world.chunkLattice.setBlock({ x, y: 0, z }, 0); // Air block to clear area
+      }
+    }
+    
+    console.log('🏟️ GameManager: Arena Prime world created with sports facilities');
   }
 }
