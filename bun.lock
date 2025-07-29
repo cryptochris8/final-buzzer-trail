@@ -6,6 +6,7 @@
       "dependencies": {
         "@hytopia.com/assets": "^0.3.15",
         "hytopia": "^0.7.14",
+        "mediasoup": "^3.16.8",
       },
       "devDependencies": {
         "@types/bun": "latest",
@@ -332,7 +333,7 @@
 
     "math-intrinsics": ["math-intrinsics@1.1.0", "", {}, "sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g=="],
 
-    "mediasoup": ["mediasoup@3.15.7", "", { "dependencies": { "@types/ini": "^4.1.1", "debug": "^4.4.0", "flatbuffers": "^25.2.10", "h264-profile-level-id": "^2.2.0", "ini": "^5.0.0", "node-fetch": "^3.3.2", "supports-color": "^10.0.0", "tar": "^7.4.3" } }, "sha512-rtf6muWw9shaytcdvYCnQdHboCui9RDL02AVc79cSgcFina7PH/EBfVJ8BckVw3h/MW8D/wmLanOTFipEU/BzA=="],
+    "mediasoup": ["mediasoup@3.17.0", "", { "dependencies": { "@types/ini": "^4.1.1", "debug": "^4.4.1", "flatbuffers": "^25.2.10", "h264-profile-level-id": "^2.2.2", "ini": "^5.0.0", "node-fetch": "^3.3.2", "supports-color": "^10.0.0", "tar": "^7.4.3" } }, "sha512-zrMXsU8pAZnhx0MGr3ggakvRjdK76uG8mSgd4EEXgaZsJtQtHF+x6D4bySvezm+scnGstnC8vr1y1zBGkIpUhw=="],
 
     "meshoptimizer": ["meshoptimizer@0.22.0", "", {}, "sha512-IebiK79sqIy+E4EgOr+CAw+Ke8hAspXKzBd0JdgEmPHiAwmvEj2S4h1rfvo+o/BnfEYd/jAOg5IeeIjzlzSnDg=="],
 
@@ -515,6 +516,8 @@
     "colorspace/color": ["color@3.2.1", "", { "dependencies": { "color-convert": "^1.9.3", "color-string": "^1.6.0" } }, "sha512-aBl7dZI9ENN6fUGC7mWpMTPNHmWUSNan9tuWN6ahh5ZLNk9baLJOnSMlrQkHcrfFgz2/RigjUVAjdx36VcemKA=="],
 
     "glob/minimatch": ["minimatch@9.0.5", "", { "dependencies": { "brace-expansion": "^2.0.1" } }, "sha512-G6T0ZX48xgozx7587koeX9Ys2NYy6Gmv//P89sEte9V9whIapMNF4idKxnW2QtCcLiTWlb/wfCabAtAFWhhBow=="],
+
+    "hytopia/mediasoup": ["mediasoup@3.15.7", "", { "dependencies": { "@types/ini": "^4.1.1", "debug": "^4.4.0", "flatbuffers": "^25.2.10", "h264-profile-level-id": "^2.2.0", "ini": "^5.0.0", "node-fetch": "^3.3.2", "supports-color": "^10.0.0", "tar": "^7.4.3" } }, "sha512-rtf6muWw9shaytcdvYCnQdHboCui9RDL02AVc79cSgcFina7PH/EBfVJ8BckVw3h/MW8D/wmLanOTFipEU/BzA=="],
 
     "lazystream/readable-stream": ["readable-stream@2.3.8", "", { "dependencies": { "core-util-is": "~1.0.0", "inherits": "~2.0.3", "isarray": "~1.0.0", "process-nextick-args": "~2.0.0", "safe-buffer": "~5.1.1", "string_decoder": "~1.1.1", "util-deprecate": "~1.0.1" } }, "sha512-8p0AUk4XODgIewSi0l8Epjs+EVnWiK7NoDIEGU0HhE7+ZyY8D1IMY7odu5lRrFXGg71L15KG8QrPmum45RTtdA=="],
 

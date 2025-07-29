@@ -72,9 +72,8 @@ export class GameManager {
     this._players.set(player.id, playerEntity);
     this._gameStates.set(player.id, gameState);
 
-    // Load UI and send initial data
-    player.ui.load('ui/index.html');
-    this._sendGameStateToPlayer(player);
+    // TrailPlayerEntity will handle the opening sequence and UI loading
+    // _sendGameStateToPlayer will be called when main game starts
     
     console.log(`✅ GameManager: Athlete ${player.username} spawned successfully`);
   }
@@ -117,6 +116,9 @@ export class GameManager {
     console.log(`⚽ GameManager: Athlete ${player.username} action: ${action}`);
 
     switch (action) {
+      case 'initialize-game':
+        this._handleGameInitialization(player, data);
+        break;
       case 'select-athletic-class':
         this._handleClassSelection(player, data.class);
         break;
@@ -143,6 +145,30 @@ export class GameManager {
         break;
       case 'challenge-sport-champion':
         this._handleChampionChallenge(player, data);
+        break;
+      case 'open-equipment-shop':
+        this._handleEquipmentShop(player);
+        break;
+      case 'shop-purchase':
+        this._handleShopPurchase(player, data);
+        break;
+      case 'exit-shop':
+        this._handleExitShop(player, data);
+        break;
+      case 'zombie-encounter-action':
+        this._handleZombieEncounterAction(player, data);
+        break;
+      case 'zombie-encounter-complete':
+        this._handleZombieEncounterComplete(player, data);
+        break;
+      case 'view-map':
+        this._handleViewMap(player);
+        break;
+      case 'continue-journey':
+        this._handleContinueJourney(player, data);
+        break;
+      case 'start-training':
+        this._handleStartTraining(player, data);
         break;
       default:
         console.log(`⚠️ GameManager: Unknown action ${action}`);
@@ -193,6 +219,32 @@ export class GameManager {
       landmarks: GAME_CONFIG.LANDMARKS,
       currentRegion: this._getCurrentRegion(gameState)
     });
+  }
+
+  /**
+   * Handle game initialization after opening sequence
+   */
+  private _handleGameInitialization(player: Player, data: { skipOpening?: boolean }): void {
+    const gameState = this._gameStates.get(player.id);
+    if (!gameState) return;
+
+    console.log(`🎮 GameManager: Initializing main game for ${player.username}${data.skipOpening ? ' (skipped opening)' : ''}`);
+
+    // Send initial game state to the main UI
+    this._sendGameStateToPlayer(player);
+
+    // If opening was skipped, provide some context
+    if (data.skipOpening) {
+      player.ui.sendData({
+        type: 'notification',
+        message: 'Welcome to Final Buzzer Trail! Your athletic journey begins in Arena Prime.',
+        style: 'info'
+      });
+    }
+
+    // Set phase to character selection to ensure proper UI state
+    gameState.phase = GamePhase.CHARACTER_SELECTION;
+    this._sendGameStateToPlayer(player);
   }
 
   /**
@@ -690,5 +742,309 @@ export class GameManager {
     }
     
     console.log('🏟️ GameManager: Arena Prime world created with sports facilities');
+  }
+
+  /**
+   * Handle equipment shop opening
+   */
+  private _handleEquipmentShop(player: Player): void {
+    const gameState = this._gameStates.get(player.id);
+    if (!gameState) return;
+
+    console.log(`🏪 GameManager: ${player.username} opening equipment shop`);
+    
+    // Load shop UI
+    player.ui.load('./ui/equipment-shop.html');
+    
+    // Send player's current funds to shop
+    player.ui.sendData({
+      type: 'update-funds',
+      funds: gameState.supplies.team_funds
+    });
+  }
+
+  /**
+   * Handle shop purchases
+   */
+  private _handleShopPurchase(player: Player, data: any): void {
+    const gameState = this._gameStates.get(player.id);
+    if (!gameState) return;
+
+    console.log(`💰 GameManager: ${player.username} purchasing items for $${data.total}`);
+    
+    // Update player funds
+    gameState.supplies.team_funds = data.newFunds;
+    
+    // Process purchases
+    if (data.purchases) {
+      data.purchases.forEach((purchase: any) => {
+        this.world?.chatManager.sendPlayerMessage(
+          player,
+          `🛒 Purchased: ${purchase.item.name} x${purchase.quantity}`,
+          '00AA00'
+        );
+      });
+    }
+    
+    this._sendGameStateToPlayer(player);
+  }
+
+  /**
+   * Handle exiting shop
+   */
+  private _handleExitShop(player: Player, data: any): void {
+    const gameState = this._gameStates.get(player.id);
+    if (!gameState) return;
+
+    console.log(`🚪 GameManager: ${player.username} exiting shop`);
+    
+    // Update funds if changed
+    if (data.remainingFunds !== undefined) {
+      gameState.supplies.team_funds = data.remainingFunds;
+    }
+    
+    // Return to main game UI
+    player.ui.load('./ui/oregon-trail-main.html');
+    this._sendGameStateToPlayer(player);
+  }
+
+  /**
+   * Handle zombie encounter actions
+   */
+  private _handleZombieEncounterAction(player: Player, data: any): void {
+    const gameState = this._gameStates.get(player.id);
+    if (!gameState) return;
+
+    console.log(`🧟‍♂️ GameManager: ${player.username} zombie action: ${data.action}`);
+    
+    let success = false;
+    let message = '';
+    let rewards = {};
+    
+    switch (data.action) {
+      case 'challenge-duel':
+        success = Math.random() > 0.4; // 60% success rate
+        if (success) {
+          message = 'You defeated the fallen champion in honorable combat!';
+          rewards = { team_funds: 75, champion_emblems: 1 };
+          gameState.supplies.energy -= 35;
+        } else {
+          message = 'The corrupted champion proved too strong...';
+          gameState.supplies.health -= 25;
+          gameState.supplies.energy -= 25;
+        }
+        break;
+        
+      case 'use-athletics':
+        // Success rate depends on athletic class
+        const classSuccessRates: { [key: string]: number } = {
+          'SOCCER_STRIKER': 0.8,
+          'BASKETBALL_ALLSTAR': 0.75,
+          'BASEBALL_SLUGGER': 0.7,
+          'GRIDIRON_GUARDIAN': 0.6,
+          'TRACK_ATHLETE': 0.85,
+          'SWIMMER': 0.75
+        };
+        success = Math.random() < (classSuccessRates[gameState.athleticClass] || 0.7);
+        if (success) {
+          message = 'Your athletic skills helped you escape safely!';
+          gameState.supplies.energy -= 15;
+        } else {
+          message = 'Your escape attempt failed...';
+          gameState.supplies.health -= 15;
+          gameState.supplies.energy -= 20;
+        }
+        break;
+        
+      case 'attempt-escape':
+        success = Math.random() > 0.3; // 70% success rate
+        if (success) {
+          message = 'You successfully outran the fallen athlete!';
+          gameState.supplies.energy -= 20;
+        } else {
+          message = 'You couldn\'t escape and had to fight!';
+          gameState.supplies.health -= 20;
+          gameState.supplies.energy -= 30;
+        }
+        break;
+        
+      case 'reason-with':
+        success = Math.random() < 0.25; // 25% success rate
+        if (success) {
+          message = 'Amazing! You awakened their former champion spirit!';
+          rewards = { team_funds: 100, champion_emblems: 2, skill_points: 10 };
+        } else {
+          message = 'They are too far gone to be reasoned with...';
+          gameState.supplies.health -= 10;
+        }
+        break;
+    }
+    
+    // Apply rewards
+    Object.entries(rewards).forEach(([key, value]) => {
+      (gameState.supplies as any)[key] = ((gameState.supplies as any)[key] || 0) + value;
+    });
+    
+    // Send result back to UI
+    player.ui.sendData({
+      type: 'encounter-result',
+      success,
+      message,
+      rewards
+    });
+    
+    this._sendGameStateToPlayer(player);
+  }
+
+  /**
+   * Handle zombie encounter completion
+   */
+  private _handleZombieEncounterComplete(player: Player, data: any): void {
+    const gameState = this._gameStates.get(player.id);
+    if (!gameState) return;
+
+    console.log(`✅ GameManager: ${player.username} completed zombie encounter: ${data.result}`);
+    
+    // Return to main game UI
+    player.ui.load('./ui/oregon-trail-main.html');
+    this._sendGameStateToPlayer(player);
+    
+    // Show completion message
+    this.world?.chatManager.sendPlayerMessage(
+      player,
+      '🏃 You continue on your athletic journey...',
+      '00AAFF'
+    );
+  }
+
+  /**
+   * Handle map viewing
+   */
+  private _handleViewMap(player: Player): void {
+    const gameState = this._gameStates.get(player.id);
+    if (!gameState) return;
+
+    console.log(`🗺️ GameManager: ${player.username} viewing trail map`);
+    
+    // Send map data to UI
+    player.ui.sendData({
+      type: 'show-map',
+      currentRegion: gameState.currentRegion,
+      landmarks: GAME_CONFIG.LANDMARKS,
+      citiesVisited: gameState.championEmblemsCollected
+    });
+  }
+
+  /**
+   * Handle continue journey
+   */
+  private _handleContinueJourney(player: Player, data: any): void {
+    const gameState = this._gameStates.get(player.id);
+    if (!gameState) return;
+
+    console.log(`🛤️ GameManager: ${player.username} continuing journey to ${data.destination || 'next city'}`);
+    
+    // Advance to next phase
+    gameState.phase = GamePhase.SPORT_CHALLENGE;
+    gameState.daysTraining++;
+    
+    // Random event chance during travel
+    if (Math.random() < 0.3) {
+      this._triggerRandomEvent(player);
+    }
+    
+    this._sendGameStateToPlayer(player);
+    
+    this.world?.chatManager.sendPlayerMessage(
+      player,
+      '🚶 You continue along the Final Buzzer Trail...',
+      '00AAFF'
+    );
+  }
+
+  /**
+   * Handle training session start
+   */
+  private _handleStartTraining(player: Player, data: any): void {
+    const gameState = this._gameStates.get(player.id);
+    if (!gameState) return;
+
+    if (gameState.supplies.energy < 20) {
+      player.ui.sendData({
+        type: 'notification',
+        message: 'Not enough energy for training! Rest or buy energy drinks.',
+        style: 'danger'
+      });
+      return;
+    }
+
+    console.log(`🏋️ GameManager: ${player.username} starting training session`);
+    
+    // Process training
+    gameState.supplies.energy -= 20;
+    gameState.supplies.team_funds += 30;
+    gameState.supplies.skill_points += 5;
+    
+    // Level progression
+    this._addExperience(gameState, 15);
+    
+    this._sendGameStateToPlayer(player);
+    
+    this.world?.chatManager.sendPlayerMessage(
+      player,
+      '💪 Training complete! +30 Team Funds, +5 Skill Points earned.',
+      '00AA00'
+    );
+  }
+
+  /**
+   * Trigger random events during travel
+   */
+  private _triggerRandomEvent(player: Player): void {
+    const events = [
+      'zombie-encounter',
+      'equipment-found',
+      'weather-challenge',
+      'helpful-athlete'
+    ];
+    
+    const randomEvent = events[Math.floor(Math.random() * events.length)];
+    
+    switch (randomEvent) {
+      case 'zombie-encounter':
+        this._triggerZombieEncounter(player);
+        break;
+      case 'equipment-found':
+        this._handleBonusEvent(player, { message: 'Found abandoned sports equipment! +15 Team Funds' });
+        break;
+      case 'weather-challenge':
+        this._handleBonusEvent(player, { message: 'Storm delayed your journey but built character! +3 Mental Toughness' });
+        break;
+      case 'helpful-athlete':
+        this._handleBonusEvent(player, { message: 'Met a helpful athlete who shared training tips! +10 Skill Points' });
+        break;
+    }
+  }
+
+  /**
+   * Trigger zombie encounter
+   */
+  private _triggerZombieEncounter(player: Player): void {
+    console.log(`🧟‍♂️ GameManager: Triggering zombie encounter for ${player.username}`);
+    
+    // Load zombie encounter UI
+    player.ui.load('./ui/zombie-encounter.html');
+    
+    // Send encounter setup data
+    player.ui.sendData({
+      type: 'encounter-setup',
+      encounterType: 'fallenChampion',
+      playerStats: {
+        energy: this._gameStates.get(player.id)?.supplies.energy || 100,
+        health: this._gameStates.get(player.id)?.supplies.health || 100,
+        funds: this._gameStates.get(player.id)?.supplies.team_funds || 100,
+        class: this._gameStates.get(player.id)?.athleticClass || 'SOCCER_STRIKER'
+      }
+    });
   }
 }

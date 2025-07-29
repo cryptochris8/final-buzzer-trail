@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Buzzer Trail - The Journey Begins</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-yellow: #FFB800;
+            --primary-green: #4CAF50;
+            --primary-orange: #FF6B35;
+            --dark-bg: #1a1a1a;
+            --darker-bg: #0f0f0f;
+            --light-text: #ffffff;
+            --secondary-text: #b0b0b0;
+            --accent-blue: #2196F3;
+            --danger-red: #f44336;
+            --success-green: #4CAF50;
+            --border-color: #333;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, var(--darker-bg) 100%);
+            color: var(--light-text);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .opening-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Background Video/Animation */
+        .background-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(255, 184, 0, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 20%, rgba(76, 175, 80, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 60% 70%, rgba(33, 150, 243, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 30% 80%, rgba(255, 107, 53, 0.15) 0%, transparent 40%),
+                linear-gradient(135deg, rgba(30, 60, 114, 0.9) 0%, rgba(42, 82, 152, 0.9) 50%, rgba(15, 15, 15, 0.95) 100%);
+            animation: backgroundPulse 8s ease-in-out infinite alternate;
+        }
+
+        @keyframes backgroundPulse {
+            0% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+
+        /* Floating Sports Elements */
+        .floating-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .floating-icon {
+            position: absolute;
+            font-size: 3rem;
+            opacity: 0.1;
+            animation: float 15s linear infinite;
+        }
+
+        .floating-icon:nth-child(1) { top: 10%; left: 10%; animation-duration: 12s; }
+        .floating-icon:nth-child(2) { top: 20%; right: 15%; animation-duration: 18s; animation-delay: -3s; }
+        .floating-icon:nth-child(3) { bottom: 30%; left: 20%; animation-duration: 14s; animation-delay: -7s; }
+        .floating-icon:nth-child(4) { top: 40%; right: 30%; animation-duration: 16s; animation-delay: -5s; }
+        .floating-icon:nth-child(5) { bottom: 20%; right: 10%; animation-duration: 13s; animation-delay: -9s; }
+        .floating-icon:nth-child(6) { top: 60%; left: 5%; animation-duration: 17s; animation-delay: -2s; }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.1; }
+            90% { opacity: 0.1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+
+        /* Main Content */
+        .story-content {
+            max-width: 1000px;
+            padding: 2rem;
+            text-align: center;
+            z-index: 10;
+            position: relative;
+            opacity: 0;
+            animation: fadeInUp 2s ease-out 1s forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Title Sequence */
+        .title-sequence {
+            margin-bottom: 3rem;
+        }
+
+        .game-logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 1rem;
+            opacity: 0;
+            animation: logoGlow 3s ease-out 0.5s forwards;
+        }
+
+        @keyframes logoGlow {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+                filter: drop-shadow(0 0 0 rgba(255, 184, 0, 0));
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+                filter: drop-shadow(0 0 30px rgba(255, 184, 0, 0.6));
+            }
+        }
+
+        .main-title {
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, var(--primary-yellow), var(--primary-orange), var(--primary-green));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            opacity: 0;
+            animation: titleReveal 2s ease-out 1.5s forwards;
+            text-shadow: 0 0 50px rgba(255, 184, 0, 0.5);
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--secondary-text);
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: subtitleReveal 1.5s ease-out 2.5s forwards;
+        }
+
+        @keyframes titleReveal {
+            0% {
+                opacity: 0;
+                transform: translateY(30px) scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes subtitleReveal {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Story Sections */
+        .story-section {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            border: 2px solid rgba(255, 184, 0, 0.3);
+            opacity: 0;
+            animation: sectionSlideIn 1.5s ease-out forwards;
+        }
+
+        .story-section:nth-child(1) { animation-delay: 3s; }
+        .story-section:nth-child(2) { animation-delay: 3.5s; }
+        .story-section:nth-child(3) { animation-delay: 4s; }
+
+        @keyframes sectionSlideIn {
+            0% {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .story-image {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 2rem;
+            background: linear-gradient(135deg, var(--primary-yellow), var(--primary-orange));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: var(--dark-bg);
+            box-shadow: 0 20px 40px rgba(255, 184, 0, 0.4);
+            animation: imageFloat 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes imageFloat {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-10px); }
+        }
+
+        .story-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: var(--light-text);
+            margin-bottom: 1.5rem;
+        }
+
+        .story-highlight {
+            color: var(--primary-yellow);
+            font-weight: 700;
+        }
+
+        /* Action Buttons */
+        .action-container {
+            margin-top: 3rem;
+            opacity: 0;
+            animation: buttonsReveal 1s ease-out 5s forwards;
+        }
+
+        @keyframes buttonsReveal {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .btn-start {
+            background: linear-gradient(45deg, var(--primary-yellow), var(--primary-orange));
+            color: var(--dark-bg);
+            border: none;
+            padding: 1.5rem 3rem;
+            font-size: 1.3rem;
+            font-weight: 800;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 10px 30px rgba(255, 184, 0, 0.4);
+            margin: 0 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-start:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(255, 184, 0, 0.6);
+        }
+
+        .btn-start:active {
+            transform: translateY(-2px);
+        }
+
+        .btn-start::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-start:hover::before {
+            left: 100%;
+        }
+
+        .btn-skip {
+            background: transparent;
+            color: var(--secondary-text);
+            border: 2px solid var(--secondary-text);
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 1rem;
+        }
+
+        .btn-skip:hover {
+            color: var(--light-text);
+            border-color: var(--light-text);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Audio Controls */
+        .audio-controls {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 100;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 4s forwards;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        .audio-btn {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid var(--primary-yellow);
+            color: var(--primary-yellow);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .audio-btn:hover {
+            background: var(--primary-yellow);
+            color: var(--dark-bg);
+            transform: scale(1.1);
+        }
+
+        /* Scrolling Text Effect */
+        .scrolling-cities {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 184, 0, 0.1) 50%, transparent 100%);
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeIn 2s ease-out 4.5s forwards;
+        }
+
+        .cities-text {
+            white-space: nowrap;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-yellow);
+            animation: scrollRight 20s linear infinite;
+        }
+
+        @keyframes scrollRight {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2.5rem;
+            }
+            
+            .story-content {
+                padding: 1rem;
+            }
+            
+            .story-section {
+                padding: 2rem;
+            }
+            
+            .story-image {
+                width: 150px;
+                height: 150px;
+                font-size: 3rem;
+            }
+            
+            .btn-start {
+                padding: 1rem 2rem;
+                font-size: 1rem;
+                margin: 0.5rem;
+            }
+        }
+
+        /* Loading overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--darker-bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 1;
+            transition: opacity 1s ease;
+        }
+
+        .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 184, 0, 0.3);
+            border-top: 4px solid var(--primary-yellow);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 2rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 1.2rem;
+            color: var(--secondary-text);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">
+            Loading Your Sports Journey...<br>
+            <small>Preparing the arena for greatness</small>
+        </div>
+    </div>
+
+    <div class="opening-container">
+        <!-- Background Animation -->
+        <div class="background-animation"></div>
+        
+        <!-- Floating Sports Elements -->
+        <div class="floating-elements">
+            <div class="floating-icon">⚽</div>
+            <div class="floating-icon">🏀</div>
+            <div class="floating-icon">⚾</div>
+            <div class="floating-icon">🏈</div>
+            <div class="floating-icon">🏃</div>
+            <div class="floating-icon">🏊</div>
+        </div>
+
+        <!-- Main Story Content -->
+        <div class="story-content">
+            <!-- Title Sequence -->
+            <div class="title-sequence">
+                <img src="./logos/logo1.png" alt="Final Buzzer Trail Logo" class="game-logo">
+                <h1 class="main-title">FINAL BUZZER TRAIL</h1>
+                <p class="subtitle">The Ultimate Athletic Journey Awaits</p>
+            </div>
+
+            <!-- Story Section 1: The Setting -->
+            <div class="story-section">
+                <div class="story-image">🏙️</div>
+                <div class="story-text">
+                    The year is 2045. <span class="story-highlight">Arena Prime</span> - once the pinnacle of athletic achievement - has fallen into chaos. 
+                    A mysterious plague has corrupted the greatest athletes of our time, turning champions into 
+                    <span class="story-highlight">fallen athletic zombies</span> who roam the sports districts.
+                </div>
+            </div>
+
+            <!-- Story Section 2: The Journey -->
+            <div class="story-section">
+                <div class="story-image">🛤️</div>
+                <div class="story-text">
+                    You are humanity's last hope - a rising athlete ready to traverse the 
+                    <span class="story-highlight">Final Buzzer Trail</span>. Journey through 14 legendary sports cities 
+                    from Akron to New York City, facing challenges, making critical decisions, and 
+                    managing your resources as you chase athletic immortality.
+                </div>
+            </div>
+
+            <!-- Story Section 3: The Mission -->
+            <div class="story-section">
+                <div class="story-image">🏆</div>
+                <div class="story-text">
+                    Choose your athletic specialty, gather your team funds, and maintain your energy as you battle through 
+                    training grounds, face corrupted champions, and make life-changing decisions. 
+                    Will you reach <span class="story-highlight">Championship Glory</span>, or become another fallen athlete 
+                    lost to the trail?
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-container">
+                <button class="btn-start" id="startJourney" onclick="startGame()">
+                    🚀 BEGIN YOUR JOURNEY
+                </button>
+                <button class="btn-skip" id="skipIntro" onclick="skipIntro()">
+                    Skip Introduction
+                </button>
+            </div>
+        </div>
+
+        <!-- Scrolling Cities -->
+        <div class="scrolling-cities">
+            <div class="cities-text">
+                🏙️ AKRON → BUFFALO → CLEVELAND → CHICAGO → DETROIT → INDIANAPOLIS → MILWAUKEE → MINNEAPOLIS → PITTSBURGH → BOSTON → NEW YORK CITY 🏆
+            </div>
+        </div>
+
+        <!-- Audio Controls -->
+        <div class="audio-controls">
+            <button class="audio-btn" id="audioToggle" onclick="toggleAudio()" title="Toggle Background Music">
+                🔊
+            </button>
+        </div>
+    </div>
+
+    <!-- Hidden Audio Elements -->
+    <audio id="backgroundMusic" loop>
+        <source src="./audio/music/main-theme.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="buttonSound">
+        <source src="./audio/sfx/ui/button-click.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        class OpeningSequence {
+            constructor() {
+                this.backgroundMusic = document.getElementById('backgroundMusic');
+                this.buttonSound = document.getElementById('buttonSound');
+                this.audioEnabled = true;
+                this.loadingComplete = false;
+                
+                this.init();
+            }
+
+            async init() {
+                // Simulate loading assets
+                await this.simulateLoading();
+                
+                // Hide loading overlay
+                document.getElementById('loadingOverlay').classList.add('hidden');
+                
+                // Start background music after user interaction
+                this.setupAudioContext();
+                
+                // Add keyboard listeners
+                this.setupKeyboardControls();
+                
+                // Mark as loaded
+                this.loadingComplete = true;
+            }
+
+            async simulateLoading() {
+                const loadingMessages = [
+                    "Loading athlete profiles...",
+                    "Preparing sports arenas...",
+                    "Calibrating training equipment...",
+                    "Initializing championship brackets...",
+                    "Ready to begin your journey!"
+                ];
+
+                const loadingText = document.querySelector('.loading-text');
+                
+                for (let i = 0; i < loadingMessages.length; i++) {
+                    loadingText.innerHTML = loadingMessages[i];
+                    await this.delay(800);
+                }
+            }
+
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            setupAudioContext() {
+                // Auto-play background music (with user interaction)
+                document.addEventListener('click', () => {
+                    if (this.audioEnabled && this.backgroundMusic.paused) {
+                        this.backgroundMusic.volume = 0.3;
+                        this.backgroundMusic.play().catch(e => console.log('Audio autoplay prevented'));
+                    }
+                }, { once: true });
+
+                document.addEventListener('keydown', () => {
+                    if (this.audioEnabled && this.backgroundMusic.paused) {
+                        this.backgroundMusic.volume = 0.3;
+                        this.backgroundMusic.play().catch(e => console.log('Audio autoplay prevented'));
+                    }
+                }, { once: true });
+            }
+
+            setupKeyboardControls() {
+                document.addEventListener('keydown', (e) => {
+                    if (!this.loadingComplete) return;
+                    
+                    switch(e.key) {
+                        case 'Enter':
+                        case ' ':
+                            e.preventDefault();
+                            this.startGame();
+                            break;
+                        case 'Escape':
+                            e.preventDefault();
+                            this.skipIntro();
+                            break;
+                        case 'm':
+                        case 'M':
+                            e.preventDefault();
+                            this.toggleAudio();
+                            break;
+                    }
+                });
+            }
+
+            playButtonSound() {
+                if (this.audioEnabled && this.buttonSound) {
+                    this.buttonSound.volume = 0.2;
+                    this.buttonSound.currentTime = 0;
+                    this.buttonSound.play().catch(e => console.log('Button sound failed'));
+                }
+            }
+
+            toggleAudio() {
+                this.playButtonSound();
+                
+                this.audioEnabled = !this.audioEnabled;
+                const audioBtn = document.getElementById('audioToggle');
+                
+                if (this.audioEnabled) {
+                    audioBtn.textContent = '🔊';
+                    audioBtn.title = 'Mute Background Music';
+                    this.backgroundMusic.play().catch(e => console.log('Audio play failed'));
+                } else {
+                    audioBtn.textContent = '🔈';
+                    audioBtn.title = 'Unmute Background Music';
+                    this.backgroundMusic.pause();
+                }
+            }
+
+            startGame() {
+                if (!this.loadingComplete) return;
+                
+                this.playButtonSound();
+                
+                // Add exciting transition effect
+                document.body.style.transition = 'all 1s ease-out';
+                document.body.style.opacity = '0';
+                document.body.style.transform = 'scale(1.1)';
+                
+                // Fade out music
+                if (this.backgroundMusic && !this.backgroundMusic.paused) {
+                    const fadeOut = setInterval(() => {
+                        if (this.backgroundMusic.volume > 0.1) {
+                            this.backgroundMusic.volume -= 0.1;
+                        } else {
+                            clearInterval(fadeOut);
+                            this.backgroundMusic.pause();
+                        }
+                    }, 100);
+                }
+                
+                // Send message to Hytopia to start the main game
+                setTimeout(() => {
+                    if (typeof hytopia !== 'undefined') {
+                        hytopia.ui.send({
+                            type: 'start-main-game',
+                            skipOpening: false
+                        });
+                    } else {
+                        // Fallback for testing
+                        this.loadMainGame();
+                    }
+                }, 1000);
+            }
+
+            skipIntro() {
+                if (!this.loadingComplete) return;
+                
+                this.playButtonSound();
+                
+                // Quick fade out
+                document.body.style.transition = 'all 0.5s ease-out';
+                document.body.style.opacity = '0';
+                
+                // Stop music immediately
+                if (this.backgroundMusic) {
+                    this.backgroundMusic.pause();
+                }
+                
+                setTimeout(() => {
+                    if (typeof hytopia !== 'undefined') {
+                        hytopia.ui.send({
+                            type: 'start-main-game',
+                            skipOpening: true
+                        });
+                    } else {
+                        // Fallback for testing
+                        this.loadMainGame();
+                    }
+                }, 500);
+            }
+
+            loadMainGame() {
+                // Fallback method to load main game UI
+                window.location.href = './index.html';
+            }
+        }
+
+        // Global functions for button onclick events
+        function startGame() {
+            window.openingSequence.startGame();
+        }
+
+        function skipIntro() {
+            window.openingSequence.skipIntro();
+        }
+
+        function toggleAudio() {
+            window.openingSequence.toggleAudio();
+        }
+
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            window.openingSequence = new OpeningSequence();
+        });
+
+        // Handle messages from Hytopia server
+        if (typeof hytopia !== 'undefined') {
+            hytopia.ui.on('data', function(data) {
+                switch(data.type) {
+                    case 'opening-complete':
+                        // Handle any server-side opening completion logic
+                        break;
+                }
+            });
+        }
+    </script>
+</body>
+</html>

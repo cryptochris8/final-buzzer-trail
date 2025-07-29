@@ -72,7 +72,42 @@ export class TrailPlayerEntity extends DefaultPlayerEntity {
       this._handleUIAction(data);
     });
 
+    // Start with the opening sequence
+    this._showOpeningSequence();
+
     console.log(`🖥️ TrailPlayerEntity: UI setup for ${this.player.username}`);
+  }
+
+  /**
+   * Show the opening story sequence
+   */
+  private _showOpeningSequence(): void {
+    console.log(`🎬 TrailPlayerEntity: Starting opening sequence for ${this.player.username}`);
+    
+    // Load the opening UI
+    this.player.ui.load('./ui/opening.html');
+  }
+
+  /**
+   * Transition from opening to main game
+   */
+  public startMainGame(skipOpening: boolean = false): void {
+    console.log(`🎮 TrailPlayerEntity: Starting main game for ${this.player.username}${skipOpening ? ' (skipped opening)' : ''}`);
+    
+    // Load the main game UI (Oregon Trail style)
+    this.player.ui.load('./ui/oregon-trail-main.html');
+    
+    // Send welcome message
+    const welcomeMessage = skipOpening 
+      ? 'Welcome to Final Buzzer Trail!' 
+      : 'Your journey begins now! Choose your athletic class to start.';
+    
+    this.world?.chatManager.sendPlayerMessage(this.player, welcomeMessage, '00AAFF');
+    
+    // Initialize game state with GameManager
+    GameManager.instance.handlePlayerAction(this.player, 'initialize-game', { 
+      skipOpening 
+    });
   }
 
   /**
@@ -128,7 +163,13 @@ export class TrailPlayerEntity extends DefaultPlayerEntity {
 
     console.log(`🎯 TrailPlayerEntity: ${this.player.username} UI action: ${data.type}`, data);
 
-    // Forward the action to the GameManager
+    // Handle opening sequence transitions
+    if (data.type === 'start-main-game') {
+      this.startMainGame(data.skipOpening);
+      return;
+    }
+
+    // Forward all other actions to the GameManager
     GameManager.instance.handlePlayerAction(this.player, data.type, data);
   }
 

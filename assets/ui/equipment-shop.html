@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Athletic Equipment Emporium - Final Buzzer Trail</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-yellow: #FFB800;
+            --primary-green: #4CAF50;
+            --primary-orange: #FF6B35;
+            --dark-bg: #1a1a1a;
+            --darker-bg: #0f0f0f;
+            --light-text: #ffffff;
+            --secondary-text: #b0b0b0;
+            --accent-blue: #2196F3;
+            --danger-red: #f44336;
+            --success-green: #4CAF50;
+            --border-color: #333;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --trail-brown: #8B4513;
+            --trail-tan: #D2B48C;
+            --shop-purple: #9C27B0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, var(--darker-bg) 100%);
+            color: var(--light-text);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .shop-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Shop Header */
+        .shop-header {
+            height: 80px;
+            background: linear-gradient(90deg, var(--shop-purple) 0%, var(--darker-bg) 50%, var(--shop-purple) 100%);
+            border-bottom: 3px solid var(--primary-yellow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+        }
+
+        .shop-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .shop-icon {
+            font-size: 2.5rem;
+        }
+
+        .shop-name {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--primary-yellow), var(--primary-orange));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .shop-funds {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .funds-amount {
+            color: var(--primary-yellow);
+            font-size: 1.5rem;
+        }
+
+        /* Main Shop Area */
+        .shop-content {
+            flex: 1;
+            display: flex;
+            background: var(--darker-bg);
+        }
+
+        /* Shop Categories */
+        .shop-categories {
+            width: 250px;
+            background: rgba(0, 0, 0, 0.9);
+            border-right: 3px solid var(--trail-brown);
+            padding: 2rem 1rem;
+        }
+
+        .category-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-yellow);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .category-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .category-btn {
+            background: linear-gradient(135deg, var(--trail-brown) 0%, rgba(139, 69, 19, 0.8) 100%);
+            border: 2px solid transparent;
+            color: var(--light-text);
+            padding: 1rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .category-btn:hover,
+        .category-btn.active {
+            border-color: var(--primary-yellow);
+            background: linear-gradient(135deg, var(--primary-yellow) 0%, var(--primary-orange) 100%);
+            color: var(--dark-bg);
+            transform: translateX(5px);
+        }
+
+        /* Items Display */
+        .items-display {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .item-card {
+            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(156, 39, 176, 0.1) 100%);
+            border: 2px solid var(--shop-purple);
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(156, 39, 176, 0.3);
+            border-color: var(--primary-yellow);
+        }
+
+        .item-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .item-card:hover::before {
+            left: 100%;
+        }
+
+        .item-icon {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--primary-yellow);
+        }
+
+        .item-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--light-text);
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .item-description {
+            font-size: 0.9rem;
+            color: var(--secondary-text);
+            margin-bottom: 1rem;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .item-effects {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .effect-tag {
+            background: rgba(76, 175, 80, 0.2);
+            color: var(--success-green);
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .item-price {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .price-amount {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--primary-yellow);
+        }
+
+        .buy-btn {
+            background: linear-gradient(45deg, var(--success-green), var(--primary-green));
+            border: none;
+            color: var(--light-text);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .buy-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .buy-btn:disabled {
+            background: var(--border-color);
+            color: var(--secondary-text);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Inventory Panel */
+        .inventory-panel {
+            width: 300px;
+            background: rgba(0, 0, 0, 0.95);
+            border-left: 3px solid var(--trail-brown);
+            padding: 2rem 1rem;
+            overflow-y: auto;
+        }
+
+        .inventory-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-yellow);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .inventory-item {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .inventory-icon {
+            font-size: 1.5rem;
+        }
+
+        .inventory-details {
+            flex: 1;
+        }
+
+        .inventory-name {
+            font-weight: 600;
+            color: var(--light-text);
+            margin-bottom: 0.25rem;
+        }
+
+        .inventory-effect {
+            font-size: 0.8rem;
+            color: var(--secondary-text);
+        }
+
+        .inventory-quantity {
+            background: var(--primary-yellow);
+            color: var(--dark-bg);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        /* Cart Summary */
+        .cart-summary {
+            background: linear-gradient(135deg, var(--trail-brown) 0%, rgba(139, 69, 19, 0.8) 100%);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border: 2px solid var(--trail-tan);
+        }
+
+        .cart-title {
+            font-weight: 700;
+            color: var(--primary-yellow);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .total-amount {
+            color: var(--primary-yellow);
+        }
+
+        .checkout-btn {
+            width: 100%;
+            background: linear-gradient(45deg, var(--primary-yellow), var(--primary-orange));
+            border: none;
+            color: var(--dark-bg);
+            padding: 1rem;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 0.5rem;
+        }
+
+        .checkout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 184, 0, 0.4);
+        }
+
+        .checkout-btn:disabled {
+            background: var(--border-color);
+            color: var(--secondary-text);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .back-btn {
+            width: 100%;
+            background: transparent;
+            border: 2px solid var(--secondary-text);
+            color: var(--secondary-text);
+            padding: 0.75rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            border-color: var(--light-text);
+            color: var(--light-text);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .shop-content {
+                flex-direction: column;
+            }
+            
+            .shop-categories {
+                width: 100%;
+                height: auto;
+                order: -1;
+            }
+            
+            .category-list {
+                flex-direction: row;
+                overflow-x: auto;
+                padding-bottom: 1rem;
+            }
+            
+            .category-btn {
+                min-width: 120px;
+                text-align: center;
+            }
+            
+            .inventory-panel {
+                width: 100%;
+                max-height: 300px;
+            }
+            
+            .items-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="shop-container">
+        <!-- Shop Header -->
+        <div class="shop-header">
+            <div class="shop-title">
+                <div class="shop-icon">🏪</div>
+                <div>
+                    <div class="shop-name">Athletic Equipment Emporium</div>
+                    <div style="font-size: 0.9rem; color: var(--secondary-text);">
+                        "Champions are made with the right gear"
+                    </div>
+                </div>
+            </div>
+            <div class="shop-funds">
+                💰 <span class="funds-amount" id="player-funds">$100</span>
+            </div>
+        </div>
+
+        <!-- Main Shop Content -->
+        <div class="shop-content">
+            <!-- Categories -->
+            <div class="shop-categories">
+                <div class="category-title">📂 Shop Categories</div>
+                <div class="category-list">
+                    <button class="category-btn active" data-category="consumables">
+                        ⚡ Energy & Health
+                    </button>
+                    <button class="category-btn" data-category="equipment">
+                        👟 Training Equipment
+                    </button>
+                    <button class="category-btn" data-category="books">
+                        📚 Knowledge & Manuals
+                    </button>
+                    <button class="category-btn" data-category="special">
+                        ⭐ Special Items
+                    </button>
+                </div>
+            </div>
+
+            <!-- Items Display -->
+            <div class="items-display">
+                <div class="items-grid" id="items-grid">
+                    <!-- Items will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Inventory Panel -->
+            <div class="inventory-panel">
+                <div class="inventory-title">
+                    🎒 Your Inventory
+                </div>
+                <div id="inventory-list">
+                    <div style="text-align: center; color: var(--secondary-text); margin: 2rem 0;">
+                        Your inventory is empty.<br>
+                        Purchase items to see them here.
+                    </div>
+                </div>
+
+                <!-- Cart Summary -->
+                <div class="cart-summary">
+                    <div class="cart-title">🛒 Shopping Cart</div>
+                    <div class="cart-total">
+                        <span>Total:</span>
+                        <span class="total-amount" id="cart-total">$0</span>
+                    </div>
+                    <button class="checkout-btn" id="checkout-btn" disabled>
+                        Purchase Items
+                    </button>
+                    <button class="back-btn" id="back-btn">
+                        Return to Trail
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Shop Items Database
+        const SHOP_ITEMS = {
+            consumables: [
+                {
+                    id: 'energy_drink',
+                    name: 'Sports Energy Drink',
+                    icon: '⚡',
+                    description: 'Restores 25 energy points. Perfect for intensive training sessions.',
+                    effects: ['+25 Energy'],
+                    price: 15,
+                    effect: { type: 'energy', amount: 25 }
+                },
+                {
+                    id: 'energy_pack',
+                    name: 'Energy Drink 3-Pack',
+                    icon: '🔋',
+                    description: 'Three energy drinks for the dedicated athlete. Better value!',
+                    effects: ['+75 Energy Total', 'Better Value'],
+                    price: 40,
+                    effect: { type: 'energy', amount: 75 }
+                },
+                {
+                    id: 'health_pack',
+                    name: 'First Aid Kit',
+                    icon: '🩹',
+                    description: 'Professional medical supplies for injury recovery.',
+                    effects: ['+30 Health', 'Injury Prevention'],
+                    price: 25,
+                    effect: { type: 'health', amount: 30 }
+                },
+                {
+                    id: 'protein_shake',
+                    name: 'Protein Recovery Shake',
+                    icon: '🥤',
+                    description: 'Aids in muscle recovery and provides sustained energy.',
+                    effects: ['+15 Energy', '+10 Health'],
+                    price: 20,
+                    effect: { type: 'both', energy: 15, health: 10 }
+                },
+                {
+                    id: 'vitamin_boost',
+                    name: 'Vitamin Supplement Pack',
+                    icon: '💊',
+                    description: 'Daily vitamins to boost overall athletic performance.',
+                    effects: ['+5 All Stats', 'Daily Bonus'],
+                    price: 35,
+                    effect: { type: 'stats', amount: 5 }
+                }
+            ],
+            equipment: [
+                {
+                    id: 'running_shoes',
+                    name: 'Premium Running Shoes',
+                    icon: '👟',
+                    description: 'Lightweight shoes that increase your speed and reduce energy costs.',
+                    effects: ['+3 Speed', '-10% Energy Cost'],
+                    price: 75,
+                    effect: { type: 'permanent', stat: 'speed', amount: 3 }
+                },
+                {
+                    id: 'training_weights',
+                    name: 'Training Weight Set',
+                    icon: '🏋️',
+                    description: 'Build strength and power with professional training weights.',
+                    effects: ['+5 Strength', '+2 Endurance'],
+                    price: 90,
+                    effect: { type: 'permanent', stat: 'strength', amount: 5 }
+                },
+                {
+                    id: 'precision_gear',
+                    name: 'Precision Training Equipment',
+                    icon: '🎯',
+                    description: 'Improve accuracy and technique with specialized training tools.',
+                    effects: ['+4 Accuracy', '+2 Technique'],
+                    price: 65,
+                    effect: { type: 'permanent', stat: 'accuracy', amount: 4 }
+                },
+                {
+                    id: 'recovery_gear',
+                    name: 'Recovery Enhancement Kit',
+                    icon: '🛡️',
+                    description: 'Advanced recovery tools to prevent injuries and fatigue.',
+                    effects: ['+20% Recovery Rate', 'Injury Resistance'],
+                    price: 80,
+                    effect: { type: 'permanent', stat: 'recovery', amount: 20 }
+                }
+            ],
+            books: [
+                {
+                    id: 'training_manual',
+                    name: 'Champion\'s Training Manual',
+                    icon: '📚',
+                    description: 'Learn advanced techniques from legendary coaches.',
+                    effects: ['+15% XP Gain', 'New Techniques'],
+                    price: 50,
+                    effect: { type: 'permanent', bonus: 'experience', amount: 15 }
+                },
+                {
+                    id: 'strategy_guide',
+                    name: 'Sports Strategy Guide',
+                    icon: '🧠',
+                    description: 'Master the mental game with tactical knowledge.',
+                    effects: ['+3 Strategy', 'Better Decisions'],
+                    price: 40,
+                    effect: { type: 'permanent', stat: 'strategy', amount: 3 }
+                },
+                {
+                    id: 'nutrition_guide',
+                    name: 'Athletic Nutrition Guide',
+                    icon: '🥗',
+                    description: 'Optimize your diet for peak performance.',
+                    effects: ['+10% Health Regen', 'Energy Efficiency'],
+                    price: 35,
+                    effect: { type: 'permanent', bonus: 'health_regen', amount: 10 }
+                }
+            ],
+            special: [
+                {
+                    id: 'lucky_charm',
+                    name: 'Champion\'s Lucky Charm',
+                    icon: '🍀',
+                    description: 'A mysterious charm that improves your luck in all endeavors.',
+                    effects: ['+5% Success Rate', 'Lucky Breaks'],
+                    price: 100,
+                    effect: { type: 'permanent', bonus: 'luck', amount: 5 }
+                },
+                {
+                    id: 'motivation_poster',
+                    name: 'Inspirational Poster Set',
+                    icon: '🖼️',
+                    description: 'Motivational quotes from sports legends to inspire greatness.',
+                    effects: ['+2 Mental Strength', 'Inspiration'],
+                    price: 25,
+                    effect: { type: 'permanent', stat: 'mental', amount: 2 }
+                },
+                {
+                    id: 'team_jersey',
+                    name: 'Vintage Championship Jersey',
+                    icon: '👕',
+                    description: 'Wear the colors of champions and feel their legacy.',
+                    effects: ['+3 Morale', 'Team Spirit'],
+                    price: 60,
+                    effect: { type: 'permanent', stat: 'morale', amount: 3 }
+                }
+            ]
+        };
+
+        class EquipmentShop {
+            constructor() {
+                this.playerFunds = 100; // Will be updated from game state
+                this.cart = new Map();
+                this.inventory = new Map();
+                this.currentCategory = 'consumables';
+                
+                this.setupEventListeners();
+                this.displayItems();
+                this.updateUI();
+            }
+
+            setupEventListeners() {
+                // Category buttons
+                document.querySelectorAll('.category-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        this.switchCategory(btn.dataset.category);
+                    });
+                });
+
+                // Back button
+                document.getElementById('back-btn').addEventListener('click', () => {
+                    this.exitShop();
+                });
+
+                // Checkout button
+                document.getElementById('checkout-btn').addEventListener('click', () => {
+                    this.processCheckout();
+                });
+
+                // Items grid for buy buttons (delegated event)
+                document.getElementById('items-grid').addEventListener('click', (e) => {
+                    if (e.target.classList.contains('buy-btn')) {
+                        const itemId = e.target.dataset.itemId;
+                        this.addToCart(itemId);
+                    }
+                });
+            }
+
+            switchCategory(category) {
+                this.currentCategory = category;
+                
+                // Update active button
+                document.querySelectorAll('.category-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.querySelector(`[data-category="${category}"]`).classList.add('active');
+                
+                this.displayItems();
+            }
+
+            displayItems() {
+                const itemsGrid = document.getElementById('items-grid');
+                const items = SHOP_ITEMS[this.currentCategory] || [];
+                
+                itemsGrid.innerHTML = items.map(item => {
+                    const canAfford = this.playerFunds >= item.price;
+                    const effectTags = item.effects.map(effect => 
+                        `<span class="effect-tag">${effect}</span>`
+                    ).join('');
+                    
+                    return `
+                        <div class="item-card">
+                            <div class="item-icon">${item.icon}</div>
+                            <div class="item-name">${item.name}</div>
+                            <div class="item-description">${item.description}</div>
+                            <div class="item-effects">${effectTags}</div>
+                            <div class="item-price">
+                                <span class="price-amount">$${item.price}</span>
+                                <button class="buy-btn" 
+                                        data-item-id="${item.id}" 
+                                        ${!canAfford ? 'disabled' : ''}>
+                                    ${canAfford ? 'Add to Cart' : 'Too Expensive'}
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            addToCart(itemId) {
+                const item = this.findItemById(itemId);
+                if (!item) return;
+
+                if (this.playerFunds < item.price) {
+                    this.showNotification('Not enough funds!', 'error');
+                    return;
+                }
+
+                // Add to cart
+                const currentQuantity = this.cart.get(itemId) || 0;
+                this.cart.set(itemId, currentQuantity + 1);
+                
+                this.updateCartDisplay();
+                this.showNotification(`${item.name} added to cart!`, 'success');
+            }
+
+            findItemById(itemId) {
+                for (const category of Object.values(SHOP_ITEMS)) {
+                    const item = category.find(i => i.id === itemId);
+                    if (item) return item;
+                }
+                return null;
+            }
+
+            updateCartDisplay() {
+                let total = 0;
+                
+                this.cart.forEach((quantity, itemId) => {
+                    const item = this.findItemById(itemId);
+                    if (item) {
+                        total += item.price * quantity;
+                    }
+                });
+
+                document.getElementById('cart-total').textContent = `$${total}`;
+                document.getElementById('checkout-btn').disabled = total === 0 || total > this.playerFunds;
+            }
+
+            processCheckout() {
+                if (this.cart.size === 0) return;
+
+                let total = 0;
+                const purchases = [];
+
+                this.cart.forEach((quantity, itemId) => {
+                    const item = this.findItemById(itemId);
+                    if (item) {
+                        total += item.price * quantity;
+                        purchases.push({ item, quantity });
+                        
+                        // Add to inventory
+                        const currentInventory = this.inventory.get(itemId) || 0;
+                        this.inventory.set(itemId, currentInventory + quantity);
+                    }
+                });
+
+                if (total > this.playerFunds) {
+                    this.showNotification('Not enough funds for this purchase!', 'error');
+                    return;
+                }
+
+                // Process purchase
+                this.playerFunds -= total;
+                this.cart.clear();
+                
+                // Send purchase to server
+                this.sendToServer('shop-purchase', {
+                    purchases: purchases,
+                    total: total,
+                    newFunds: this.playerFunds
+                });
+
+                this.updateUI();
+                this.updateInventoryDisplay();
+                this.showNotification(`Purchase successful! Spent $${total}`, 'success');
+            }
+
+            updateInventoryDisplay() {
+                const inventoryList = document.getElementById('inventory-list');
+                
+                if (this.inventory.size === 0) {
+                    inventoryList.innerHTML = `
+                        <div style="text-align: center; color: var(--secondary-text); margin: 2rem 0;">
+                            Your inventory is empty.<br>
+                            Purchase items to see them here.
+                        </div>
+                    `;
+                    return;
+                }
+
+                const inventoryHTML = Array.from(this.inventory.entries()).map(([itemId, quantity]) => {
+                    const item = this.findItemById(itemId);
+                    if (!item) return '';
+                    
+                    return `
+                        <div class="inventory-item">
+                            <div class="inventory-icon">${item.icon}</div>
+                            <div class="inventory-details">
+                                <div class="inventory-name">${item.name}</div>
+                                <div class="inventory-effect">${item.effects[0]}</div>
+                            </div>
+                            <div class="inventory-quantity">${quantity}</div>
+                        </div>
+                    `;
+                }).join('');
+
+                inventoryList.innerHTML = inventoryHTML;
+            }
+
+            updateUI() {
+                document.getElementById('player-funds').textContent = `$${this.playerFunds}`;
+                this.updateCartDisplay();
+                this.displayItems(); // Refresh to update buy button states
+            }
+
+            showNotification(message, type = 'info') {
+                // Simple notification - could be enhanced
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 100px;
+                    right: 20px;
+                    padding: 1rem 1.5rem;
+                    border-radius: 10px;
+                    color: white;
+                    font-weight: 600;
+                    z-index: 3000;
+                    animation: slideIn 0.3s ease;
+                    max-width: 300px;
+                    background: ${type === 'success' ? 'var(--success-green)' : 
+                                type === 'error' ? 'var(--danger-red)' : 'var(--accent-blue)'};
+                `;
+                notification.textContent = message;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
+
+            exitShop() {
+                // Send message to return to main game
+                this.sendToServer('exit-shop', {
+                    inventory: Array.from(this.inventory.entries()),
+                    remainingFunds: this.playerFunds
+                });
+            }
+
+            sendToServer(action, data) {
+                if (typeof hytopia !== 'undefined') {
+                    hytopia.ui.send({
+                        type: action,
+                        ...data
+                    });
+                }
+                console.log('Sent to server:', action, data);
+            }
+
+            // Handle messages from server
+            handleServerMessage(data) {
+                switch (data.type) {
+                    case 'update-funds':
+                        this.playerFunds = data.funds;
+                        this.updateUI();
+                        break;
+                    case 'update-inventory':
+                        this.inventory = new Map(data.inventory);
+                        this.updateInventoryDisplay();
+                        break;
+                }
+            }
+        }
+
+        // Initialize shop when page loads
+        let shop;
+        document.addEventListener('DOMContentLoaded', () => {
+            shop = new EquipmentShop();
+
+            // Set up Hytopia integration
+            if (typeof hytopia !== 'undefined') {
+                hytopia.ui.on('data', function(data) {
+                    shop.handleServerMessage(data);
+                });
+            }
+        });
+
+        // Add CSS animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

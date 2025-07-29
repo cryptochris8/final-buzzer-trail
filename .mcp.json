@@ -8,7 +8,7 @@
         "topia-mcp@latest",
         "serve",
         "--dir",
-        "F:\\Hytopia-games\\final-buzzer-trail",
+        "C:\\Users\\chris\\final-buzzer-trail",
         "--resources"
       ],
       "env": {}
